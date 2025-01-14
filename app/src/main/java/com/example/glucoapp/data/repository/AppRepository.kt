@@ -6,7 +6,6 @@ import com.example.glucoapp.data.db.entities.Meal
 import com.example.glucoapp.data.db.entities.Note
 import com.example.glucoapp.data.db.entities.PredefinedMeal
 import com.example.glucoapp.data.db.entities.User
-import com.example.glucoapp.navigation.Screen
 import kotlinx.coroutines.flow.Flow
 
 interface AppRepository {
@@ -18,9 +17,9 @@ interface AppRepository {
     fun getUserByUsername(username: String): Flow<User?>
 
     // Note operations
-    suspend fun insertNote(note: Screen.Notes)
-    suspend fun updateNote(note: Screen.Notes)
-    suspend fun deleteNote(note: Screen.Notes)
+    suspend fun insertNote(note: Note)
+    suspend fun updateNote(note: Note)
+    suspend fun deleteNote(note: Note)
     fun getNotesByUserId(userId: Int): Flow<List<Note>>
 
     // Meal operations

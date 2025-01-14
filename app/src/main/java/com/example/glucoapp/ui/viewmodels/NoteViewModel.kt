@@ -2,7 +2,7 @@ package com.example.glucoapp.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.glucoapp.data.db.entities.Meal
+import com.example.glucoapp.data.db.entities.Note
 import com.example.glucoapp.data.db.entities.User
 import com.example.glucoapp.data.repository.AppRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,11 +13,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 @HiltViewModel
-class MealsViewModel @Inject constructor(private val repository: AppRepository) : ViewModel() {
+class NoteViewModel @Inject constructor(private val repository: AppRepository) : ViewModel() {
 
-    // ... other functions (loadMealsByUserId, etc.) ...
-    private val _meals = MutableStateFlow<List<Meal>>(emptyList())
-    val meals: StateFlow<List<Meal>> = _meals.asStateFlow()
+    private val _notes = MutableStateFlow<List<Note>>(emptyList())
+    val notes: StateFlow<List<Note>> = _notes.asStateFlow()
 
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> = _user
@@ -30,32 +29,32 @@ class MealsViewModel @Inject constructor(private val repository: AppRepository) 
         }
     }
 
-    fun loadMealsByUserId(userId: Int) {
+    fun loadNotesByUserId(userId: Int) {
         viewModelScope.launch {
-            repository.getMealsByUserId(userId).collect { meals ->
-                _meals.value = meals
+            repository.getNotesByUserId(userId).collect { notes ->
+                _notes.value = notes
             }
         }
     }
 
-    fun insertMeal(meal: Meal) {
+    fun insertNote(note: Note) {
         viewModelScope.launch {
-            repository.insertMeal(meal)
-            _user.value?.userId?.let { loadMealsByUserId(it) }
+            repository.insertNote(note)
+            _user.value?.userId?.let { loadNotesByUserId(it) }
         }
     }
 
-    fun updateMeal(meal: Meal) {
+    fun updateNote(note: Note) {
         viewModelScope.launch {
-            repository.updateMeal(meal)
-            _user.value?.userId?.let { loadMealsByUserId(it) }
+            repository.updateNote(note)
+            _user.value?.userId?.let { loadNotesByUserId(it) }
         }
     }
 
-    fun deleteMeal(meal: Meal) {
+    fun deleteNote(note: Note) {
         viewModelScope.launch {
-            repository.deleteMeal(meal)
-            _user.value?.userId?.let { loadMealsByUserId(it) }
+            repository.deleteNote(note)
+            _user.value?.userId?.let { loadNotesByUserId(it) }
         }
     }
 }

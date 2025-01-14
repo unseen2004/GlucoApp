@@ -1,10 +1,11 @@
 package com.example.glucoapp.di
 
 import android.content.Context
+import androidx.room.Room
 import com.example.glucoapp.data.db.AppDatabase
+import com.example.glucoapp.data.db.MIGRATION_4_5
 import com.example.glucoapp.data.repository.AppRepository
 import com.example.glucoapp.data.repository.AppRepositoryImpl
-import com.example.glucoapp.utils.UserPreferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,21 +17,28 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    @Singleton
     @Provides
+    @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
-        return AppDatabase.getDatabase(context)
+        return Room.databaseBuilder(
+            context,
+            AppDatabase::class.java,
+            "glucose_tracker_database"
+        )
+            .addMigrations(MIGRATION_4_5)
+            .build()
     }
 
-    @Singleton
     @Provides
+    @Singleton
     fun provideAppRepository(db: AppDatabase): AppRepository {
-        return AppRepositoryImpl(db.userDao(), db.noteDao(), db.mealDao(), db.activityDao())
-    }
-
-    @Singleton
-    @Provides
-    fun provideUserPreferences(@ApplicationContext context: Context): UserPreferences {
-        return UserPreferences(context)
+        return AppRepositoryImpl(
+            db.userDao(),
+            db.noteDao(),
+            db.mealDao(),
+            db.activityDao(),
+            db.insulinTypeDao(),
+            db.predefinedMealDao()
+        )
     }
 }

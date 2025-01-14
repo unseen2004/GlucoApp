@@ -2,7 +2,6 @@ package com.example.glucoapp.data.repository
 
 import com.example.glucoapp.data.db.daos.*
 import com.example.glucoapp.data.db.entities.*
-import com.example.glucoapp.navigation.Screen
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -23,9 +22,9 @@ class AppRepositoryImpl @Inject constructor(
     override fun getUserByUsername(username: String): Flow<User?> = userDao.getUserByUsername(username)
 
     // Note operations
-    override suspend fun insertNote(note: Screen.Notes) = noteDao.insert(note)
-    override suspend fun updateNote(note: Screen.Notes) = noteDao.update(note)
-    override suspend fun deleteNote(note: Screen.Notes) = noteDao.delete(note)
+    override suspend fun insertNote(note: Note) = noteDao.insert(note)
+    override suspend fun updateNote(note: Note) = noteDao.update(note)
+    override suspend fun deleteNote(note: Note) = noteDao.delete(note)
     override fun getNotesByUserId(userId: Int): Flow<List<Note>> = noteDao.getNotesByUserId(userId)
 
     // Meal operations

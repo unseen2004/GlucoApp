@@ -1,114 +1,120 @@
 package com.example.glucoapp.ui.views
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
-import com.example.glucoapp.ui.viewmodels.MainViewModel
-import com.example.glucoapp.ui.viewmodels.NotesViewModel
-import com.example.glucoapp.data.db.entities.Notes
+import com.example.glucoapp.data.db.entities.Note
 import com.example.glucoapp.navigation.Screen
-import kotlinx.coroutines.launch
+import com.example.glucoapp.ui.viewmodels.NoteViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddNoteScreen(navController: NavController, notesViewModel: NotesViewModel = hiltViewModel()) {
-    val context = LocalContext.current
-    val mainViewModel: MainViewModel = ViewModelProvider(context as androidx.fragment.app.FragmentActivity)[MainViewModel::class.java]
-
-    var glucoseLevel by remember { mutableStateOf("") }
-    var insulinDoseFast by remember { mutableStateOf("") }
-    var insulinDoseFastCorr by remember { mutableStateOf("") }
-    var insulinDoseLong by remember { mutableStateOf("") }
-    var insulinType by remember { mutableIntStateOf(0) } // Default to type 1
+fun AddNoteScreen(
+    navController: NavController,
+    viewModel: NoteViewModel = hiltViewModel()
+) {
     var noteText by remember { mutableStateOf("") }
+    var glucoseLevel by remember { mutableStateOf("") }
+    var insulinTypeId by remember { mutableStateOf("") } // Consider using a dropdown or selection UI
     var sugar by remember { mutableStateOf("") }
     var carboExch by remember { mutableStateOf("") }
-    // Add meal and activity related states if necessary
-
-    val coroutineScope = rememberCoroutineScope() // Create a coroutine scope
+    // ... add more fields for other note properties
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Add Notes") }) }
+        topBar = {
+            TopAppBar(
+                title = { Text("Add Note") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigate(Screen.Notes.route) }) {
+                        Icon(Icons.Filled.Close, "Cancel")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {
+                        val newNote = Note(
+                            userId = 1, // Replace with actual user ID
+                            timestamp = System.currentTimeMillis(), // Or get timestamp from user input
+                            glucoseLevel = glucoseLevel.toDoubleOrNull() ?: 0.0,
+                            insulinTypeId = insulinTypeId.toIntOrNull(), // Convert to Int if needed
+                            noteText = noteText,
+                            sugar = sugar.toDoubleOrNull() ?: 0.0,
+                            carboExch = carboExch.toDoubleOrNull() ?: 0.0,
+                            mealId = null, // Set if linked to a meal
+                            activityId = null // Set if linked to an activity
+                        )
+                        viewModel.insertNote(newNote)
+                        navController.navigate(Screen.Notes.route)
+                    }) {
+                        Icon(Icons.Filled.Check, "Save")
+                    }
+                }
+            )
+        }
     ) { innerPadding ->
-        Column(modifier = Modifier
-            .padding(innerPadding)
-            .padding(16.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            OutlinedTextField(
+                value = noteText,
+                onValueChange = { noteText = it },
+                label = { Text("Note Text") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
             OutlinedTextField(
                 value = glucoseLevel,
                 onValueChange = { glucoseLevel = it },
                 label = { Text("Glucose Level") },
                 modifier = Modifier.fillMaxWidth()
             )
-            OutlinedTextField(
-                value = insulinDoseFast,
-                onValueChange = { insulinDoseFast = it },
-                label = { Text("Insulin Dose (Fast)") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            OutlinedTextField(
-                value = insulinDoseFastCorr,
-                onValueChange = { insulinDoseFastCorr = it },
-                label = { Text("Insulin Dose (Fast Correction)") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            OutlinedTextField(
-                value = insulinDoseLong,
-                onValueChange = { insulinDoseLong = it },
-                label = { Text("Insulin Dose (Long)") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            // Add a dropdown or segmented control for insulinType if needed
+            Spacer(modifier = Modifier.height(8.dp))
 
-            OutlinedTextField(
-                value = noteText,
-                onValueChange = { noteText = it },
-                label = { Text("Notes Text") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            OutlinedTextField(
-                value = sugar,
-                onValueChange = { sugar = it },
-                label = { Text("Sugar") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            OutlinedTextField(
-                value = carboExch,
-                onValueChange = { carboExch = it },
-                label = { Text("Carbohydrate Exchanges") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            // Add fields for meal and activity if necessary
+            // Add fields for insulinTypeId, sugar, carboExch, etc.
+            // Consider using dropdowns or other selection UI elements for insulinTypeId and meal/activity selection
 
-            Spacer(modifier = Modifier.height(16.dp))
+            // Example of adding a meal from the database (replace with your actual implementation)
             Button(
-                onClick = {
-                    val newNotes = Notes(
-                        userId = notesViewModel.getUserId(mainViewModel), // Replace with actual user ID
-                        timestamp = System.currentTimeMillis(), // Use current time
-                        glucoseLevel = glucoseLevel.toDoubleOrNull() ?: 0.0,
-                        insulinDoseFast = insulinDoseFast.toDoubleOrNull() ?: 0.0,
-                        insulinDoseFastCorr = insulinDoseFastCorr.toDoubleOrNull() ?: 0.0,
-                        insulinDoseLong = insulinDoseLong.toDoubleOrNull() ?: 0.0,
-                        insulinType = insulinType,
-                        noteText = noteText,
-                        sugar = sugar.toDoubleOrNull() ?: 0.0,
-                        carboExch = carboExch.toDoubleOrNull() ?: 0.0,
-                        mealId = null, // Replace with actual meal ID if applicable
-                        activityId = null // Replace with actual activity ID if applicable
-                    )
-                    coroutineScope.launch {
-                        notesViewModel.insertNote(newNotes)
-                        navController.navigate(Screen.Notes.route)
-                    }
-                },
+                onClick = { /* TODO: Implement logic to select meal from database */ },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Save Notes")
+                Text("Select Meal from Database")
+            }
+
+            // Example of adding a predefined meal (replace with your actual implementation)
+            Button(
+                onClick = { /* TODO: Implement logic to select predefined meal */ },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Select Predefined Meal")
             }
         }
     }
