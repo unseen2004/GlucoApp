@@ -43,7 +43,7 @@ fun MainScreen() {
 
     Scaffold(
         bottomBar = {
-            BottomNavigationBar(navController)
+            BottomNavigationBar(navController) // Now correctly referenced
         }
     ) { innerPadding ->
         NavHost(
@@ -53,12 +53,14 @@ fun MainScreen() {
         ) {
             composable(Screen.Notes.route) { NotesScreen(navController) }
             composable(Screen.Meals.route) { MealsScreen(navController) }
-            composable(Screen.Settings.route) { SettingsScreen(navController, mainViewModel) }
+            composable(Screen.Settings.route) { SettingsScreen(navController) }
             composable(Screen.AddNote.route) { AddNoteScreen(navController) }
             composable(Screen.AddMeal.route) { AddMealScreen(navController) }
         }
     }
 }
+
+// ... other composables ...
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {

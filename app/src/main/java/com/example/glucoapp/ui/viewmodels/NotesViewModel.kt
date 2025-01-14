@@ -6,49 +6,29 @@ import com.example.glucoapp.data.db.entities.Note
 import com.example.glucoapp.data.repository.AppRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class NotesViewModel @Inject constructor(
-    private val repository: AppRepository,
-    private val mainViewModel: MainViewModel
+    private val repository: AppRepository
 ) : ViewModel() {
 
     private val _notes = MutableStateFlow<List<Note>>(emptyList())
-
-    // Combine notes with user data
-    val notes: StateFlow<List<Note>> = mainViewModel.user.combine(_notes) { user, notes ->
-        if (user != null) {
-            notes.filter { it.userId == user.userId }
-        } else {
-            emptyList()
-        }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+    val notes: StateFlow<List<Note>> = _notes.asStateFlow()
 
     init {
         loadNotes()
     }
 
     private fun loadNotes() {
-        val userId = mainViewModel.user.value?.userId ?: return
-        viewModelScope.launch {
-            repository.getNotesByUserId(userId).collect { notesList ->
-                _notes.value = notesList
-            }
-        }
+        // This method will be updated to use ViewModelProvider
     }
-fun getUserId(): Int {
-    return mainViewModel.user.value?.userId ?: 0
-}
-    fun insertNote(note: Note) {
-        viewModelScope.launch {
-            repository.insertNote(note)
-        }
+
+    suspend fun insertNote(note: Note) {
+        return repository.insertNote(note)
     }
 
     fun deleteNote(note: Note) {
@@ -61,5 +41,9 @@ fun getUserId(): Int {
         viewModelScope.launch {
             repository.updateNote(note)
         }
+    }
+
+    fun getUserId(mainViewModel: MainViewModel): Int {
+        return mainViewModel.user.value?.userId ?: 0
     }
 }

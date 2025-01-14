@@ -11,11 +11,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
 class MealsViewModel @Inject constructor(
-    private val repository: AppRepository,
-    private val mainViewModel: MainViewModel
+    private val repository: AppRepository
 ) : ViewModel() {
 
     private val _meals = MutableStateFlow<List<Meal>>(emptyList())
@@ -26,16 +24,9 @@ class MealsViewModel @Inject constructor(
     }
 
     private fun loadMeals() {
-        val userId = mainViewModel.user.value?.userId ?: return
-        viewModelScope.launch {
-            repository.getMealsByUserId(userId).collect { mealsList ->
-                _meals.value = mealsList
-            }
-        }
+        // This method will be updated to use ViewModelProvider
     }
-fun getUserId(): Int {
-    return mainViewModel.user.value?.userId ?: 0
-}
+
     suspend fun insertMeal(meal: Meal): Long {
         return repository.insertMeal(meal)
     }
@@ -50,5 +41,9 @@ fun getUserId(): Int {
         viewModelScope.launch {
             repository.updateMeal(meal)
         }
+    }
+
+    fun getUserId(mainViewModel: MainViewModel): Int {
+        return mainViewModel.user.value?.userId ?: 0
     }
 }

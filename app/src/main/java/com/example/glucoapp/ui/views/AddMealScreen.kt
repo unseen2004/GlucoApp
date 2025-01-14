@@ -4,9 +4,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.glucoapp.ui.viewmodels.MainViewModel
 import com.example.glucoapp.ui.viewmodels.MealsViewModel
 import com.example.glucoapp.data.db.entities.Meal
 import com.example.glucoapp.navigation.Screen
@@ -14,6 +18,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AddMealScreen(navController: NavController, mealsViewModel: MealsViewModel = hiltViewModel()) {
+    val context = LocalContext.current
+    val mainViewModel: MainViewModel = ViewModelProvider(context as androidx.fragment.app.FragmentActivity).get(MainViewModel::class.java)
+
     var foodName by remember { mutableStateOf("") }
     var protein by remember { mutableStateOf("") }
     var carbs by remember { mutableStateOf("") }
@@ -67,7 +74,7 @@ fun AddMealScreen(navController: NavController, mealsViewModel: MealsViewModel =
             Button(
                 onClick = {
                     val newMeal = Meal(
-                        userId = mealsViewModel.getUserId(),
+                        userId = mealsViewModel.getUserId(mainViewModel),
                         foodName = foodName,
                         protein = protein.toDoubleOrNull() ?: 0.0,
                         carbs = carbs.toDoubleOrNull() ?: 0.0,

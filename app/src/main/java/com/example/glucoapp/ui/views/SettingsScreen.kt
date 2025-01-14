@@ -1,23 +1,37 @@
 package com.example.glucoapp.ui.views
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.glucoapp.ui.viewmodels.MainViewModel
+import com.example.glucoapp.ui.viewmodels.SettingsViewModel
 
 @Composable
-fun SettingsScreen(navController: NavController, mainViewModel: MainViewModel) {
+fun SettingsScreen(navController: NavController, settingsViewModel: SettingsViewModel = hiltViewModel()) {
+    val context = LocalContext.current
+    val mainViewModel: MainViewModel = hiltViewModel()
+
     Scaffold(
         topBar = { TopAppBar(title = { Text("Settings") }) }
     ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
-            Text(text = "Settings will go here")
-            // Add your settings UI components here
+        Column(modifier = Modifier
+            .padding(innerPadding)
+            .padding(16.dp)) {
+            // Settings UI components here
+
+            Button(
+                onClick = {
+                    settingsViewModel.updateSettings(mainViewModel)
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Save Settings")
+            }
         }
     }
 }
