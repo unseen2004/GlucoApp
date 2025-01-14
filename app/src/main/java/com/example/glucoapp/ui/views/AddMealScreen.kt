@@ -49,7 +49,7 @@ fun AddMealScreen(
             TopAppBar(
                 title = { Text("Add Meal") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigate(Screen.Meals.route) }) {
+                    IconButton(onClick = { navController.navigate(Screen.Main.route) }) {
                         Icon(Icons.Filled.Close, "Cancel")
                     }
                 },
@@ -71,7 +71,7 @@ fun AddMealScreen(
                         viewModel.insertMeal(newMeal)
 
                         // Navigate back to the Meals screen
-                        navController.navigate(Screen.Meals.route)
+                        navController.navigate(Screen.Main.route)
                     }) {
                         Icon(Icons.Filled.Check, "Save")
                     }

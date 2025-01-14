@@ -13,10 +13,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -32,7 +30,7 @@ fun MainScreen(
     navController: NavController,
     viewModel: MainViewModel = hiltViewModel()
 ) {
-    var selectedScreen by remember { mutableStateOf<Screen>(Screen.Notes) }
+    val selectedScreen by viewModel.selectedScreen.collectAsState()
 
     Scaffold(
         topBar = {
@@ -46,7 +44,7 @@ fun MainScreen(
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 Button(
-                    onClick = { selectedScreen = Screen.Notes },
+                    onClick = { viewModel.onScreenSelected(Screen.Notes) },
                     modifier = Modifier.weight(1f),
                     content = {
                         Text(
@@ -57,7 +55,7 @@ fun MainScreen(
                 )
                 Spacer(modifier = Modifier.weight(0.2f))
                 Button(
-                    onClick = { selectedScreen = Screen.Meals },
+                    onClick = { viewModel.onScreenSelected(Screen.Meals) },
                     modifier = Modifier.weight(1f),
                     content = {
                         Text(
@@ -68,7 +66,7 @@ fun MainScreen(
                 )
                 Spacer(modifier = Modifier.weight(0.2f))
                 Button(
-                    onClick = { selectedScreen = Screen.Settings },
+                    onClick = { viewModel.onScreenSelected(Screen.Settings) },
                     modifier = Modifier.weight(1f),
                     content = {
                         Text(
