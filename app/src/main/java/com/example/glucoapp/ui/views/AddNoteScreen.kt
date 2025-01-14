@@ -1,5 +1,16 @@
 package com.example.glucoapp.ui.views
 
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.example.glucoapp.ui.viewmodels.NotesViewModel
+import com.example.glucoapp.data.db.entities.Note
+import com.example.glucoapp.navigation.Screen
+
 @Composable
 fun AddNoteScreen(navController: NavController, notesViewModel: NotesViewModel = hiltViewModel()) {
     var glucoseLevel by remember { mutableStateOf("") }
@@ -68,7 +79,7 @@ fun AddNoteScreen(navController: NavController, notesViewModel: NotesViewModel =
             Button(
                 onClick = {
                     val newNote = Note(
-                        userId = notesViewModel.mainViewModel.user.value?.userId ?: 0, // Replace with actual user ID
+                        userId = notesViewModel.getUserId(), // Replace with actual user ID
                         timestamp = System.currentTimeMillis(), // Use current time
                         glucoseLevel = glucoseLevel.toDoubleOrNull() ?: 0.0,
                         insulinDoseFast = insulinDoseFast.toDoubleOrNull() ?: 0.0,

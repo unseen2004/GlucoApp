@@ -13,8 +13,6 @@ import com.example.glucoapp.data.db.entities.Meal
 import com.example.glucoapp.data.db.entities.Note
 import com.example.glucoapp.data.db.entities.User
 
-
-
 @Database(
     entities = [User::class, Note::class, Meal::class, Activity::class],
     version = 1,
@@ -35,7 +33,7 @@ abstract class AppDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "glucose_tracker_database"
+                    "gluco_app_database"
                 )
                     .fallbackToDestructiveMigration()
                     .build()

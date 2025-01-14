@@ -13,7 +13,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Glucose Tracker"
+rootProject.name = "Gluco App"
 include(":app")
 
 /*

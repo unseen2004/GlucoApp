@@ -1,5 +1,17 @@
 package com.example.glucoapp.data.repository
 
+import com.example.glucoapp.data.db.daos.ActivityDao
+import com.example.glucoapp.data.db.daos.MealDao
+import com.example.glucoapp.data.db.daos.NoteDao
+import com.example.glucoapp.data.db.daos.UserDao
+import com.example.glucoapp.data.db.entities.Activity
+import com.example.glucoapp.data.db.entities.Meal
+import com.example.glucoapp.data.db.entities.Note
+import com.example.glucoapp.data.db.entities.User
+import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
+
+
 class AppRepositoryImpl @Inject constructor(
     private val userDao: UserDao,
     private val noteDao: NoteDao,

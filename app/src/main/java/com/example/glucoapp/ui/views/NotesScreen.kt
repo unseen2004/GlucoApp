@@ -1,11 +1,15 @@
 package com.example.glucoapp.ui.views
+
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
 import androidx.compose.material.Card
+import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.OutlinedTextField
@@ -37,7 +41,7 @@ fun NotesScreen(navController: NavController, notesViewModel: NotesViewModel = h
     Scaffold(
         topBar = { TopAppBar(title = { Text("Notes") }) },
         floatingActionButton = {
-            IconButton(onClick = { navController.navigate(Screen.AddNote.route) }) {
+            FloatingActionButton(onClick = { navController.navigate(Screen.AddNote.route) }) {
                 Icon(Icons.Filled.Add, contentDescription = "Add Note")
             }
         }
@@ -46,7 +50,7 @@ fun NotesScreen(navController: NavController, notesViewModel: NotesViewModel = h
             notes = notes,
             onDeleteNote = { note -> notesViewModel.deleteNote(note) },
             onUpdateNote = { note -> notesViewModel.updateNote(note) },
-            modifier = padding(innerPadding)
+            modifier = Modifier.padding(innerPadding) // Correct padding modifier
         )
     }
 }
@@ -56,10 +60,16 @@ fun NotesContent(
     notes: List<Note>,
     onDeleteNote: (Note) -> Unit,
     onUpdateNote: (Note) -> Unit,
-    modifier: Modifier
+    modifier: Modifier = Modifier // Add default Modifier
 ) {
-    LazyColumn(modifier = modifier.fillMaxSize()) {
-        items(notes) { note ->
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
+    ) {
+        items(
+            items = notes,
+            key = { note -> note.noteId } // Provide a unique key
+        ) { note ->
             NoteItem(
                 note = note,
                 onDelete = { onDeleteNote(note) },

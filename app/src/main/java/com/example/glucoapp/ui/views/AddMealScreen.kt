@@ -1,5 +1,17 @@
 package com.example.glucoapp.ui.views
 
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.example.glucoapp.ui.viewmodels.MealsViewModel
+import com.example.glucoapp.data.db.entities.Meal
+import com.example.glucoapp.navigation.Screen
+import kotlinx.coroutines.launch
+
 @Composable
 fun AddMealScreen(navController: NavController, mealsViewModel: MealsViewModel = hiltViewModel()) {
     var foodName by remember { mutableStateOf("") }
@@ -9,12 +21,16 @@ fun AddMealScreen(navController: NavController, mealsViewModel: MealsViewModel =
     var kcal by remember { mutableStateOf("") }
     // Add state for imagePath if you are handling images
 
+    val coroutineScope = rememberCoroutineScope() // Create a coroutine scope
+
     Scaffold(
         topBar = { TopAppBar(title = { Text("Add Meal") }) }
-    ) {  innerPadding ->
-        Column(modifier = Modifier
-            .padding(innerPadding)
-            .padding(16.dp)) {
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(16.dp)
+        ) {
             OutlinedTextField(
                 value = foodName,
                 onValueChange = { foodName = it },
@@ -51,7 +67,7 @@ fun AddMealScreen(navController: NavController, mealsViewModel: MealsViewModel =
             Button(
                 onClick = {
                     val newMeal = Meal(
-                        userId = mealsViewModel.mainViewModel.user.value?.userId ?: 0,
+                        userId = mealsViewModel.getUserId(),
                         foodName = foodName,
                         protein = protein.toDoubleOrNull() ?: 0.0,
                         carbs = carbs.toDoubleOrNull() ?: 0.0,
@@ -60,7 +76,7 @@ fun AddMealScreen(navController: NavController, mealsViewModel: MealsViewModel =
                         imagePath = null, // Set image path if applicable
                         isPredefined = 0 // Or 1 if it's a predefined meal
                     )
-                    viewModelScope.launch {
+                    coroutineScope.launch { // Use the coroutine scope to launch the coroutine
                         val newMealId = mealsViewModel.insertMeal(newMeal)
                         // Handle the new meal ID if needed
                         navController.navigate(Screen.Meals.route)

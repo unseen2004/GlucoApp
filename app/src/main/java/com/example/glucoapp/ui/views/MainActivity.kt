@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -18,17 +19,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.glucoapp.navigation.Screen
-import com.example.glucoapp.ui.theme.GlucoseTrackerTheme
+import com.example.glucoapp.ui.theme.GlucoAppTheme
 import com.example.glucoapp.ui.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            GlucoseTrackerTheme {
+            GlucoAppTheme {
                 MainScreen()
             }
         }
@@ -49,7 +49,7 @@ fun MainScreen() {
         NavHost(
             navController = navController,
             startDestination = startDestination,
-            modifier = padding(innerPadding)
+            modifier = Modifier.padding(innerPadding)
         ) {
             composable(Screen.Notes.route) { NotesScreen(navController) }
             composable(Screen.Meals.route) { MealsScreen(navController) }
