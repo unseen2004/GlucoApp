@@ -73,7 +73,7 @@ fun AddNoteScreen(
             TopAppBar(
                 title = { Text("Add Note") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigate(Screen.Main.route) }) {
+                    IconButton(onClick = { navController.navigate(Screen.Notes.route) }) {
                         Icon(Icons.Filled.Close, "Cancel")
                     }
                 },
@@ -91,7 +91,7 @@ fun AddNoteScreen(
                             activityId = null // Set if linked to an activity
                         )
                         viewModel.insertNote(newNote)
-                        navController.navigate(Screen.Main.route)
+                        navController.navigate(Screen.Notes.route)
                     }) {
                         Icon(Icons.Filled.Check, "Save")
                     }
