@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.glucoapp.navigation.Screen
+import com.example.glucoapp.presentation.views.AddNoteScreen
 import com.example.glucoapp.presentation.views.NotesScreen
 import com.example.glucoapp.ui.theme.GlucoAppTheme
 import dagger.hilt.android.AndroidEntryPoint

@@ -1,5 +1,7 @@
-package com.example.glucoapp.ui.views
+package com.example.glucoapp.presentation.views
 
+import android.app.DatePickerDialog
+import android.widget.DatePicker
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,9 +29,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.glucoapp.data.db.entities.Note
 import com.example.glucoapp.navigation.Screen
-import com.example.glucoapp.ui.viewmodels.NoteViewModel
+import java.util.Calendar
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import com.example.glucoapp.data.db.entities.Note
+import com.example.glucoapp.presentation.viewmodels.NoteViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,10 +45,28 @@ fun AddNoteScreen(
 ) {
     var noteText by remember { mutableStateOf("") }
     var glucoseLevel by remember { mutableStateOf("") }
-    var insulinTypeId by remember { mutableStateOf("") } // Consider using a dropdown or selection UI
+    var insulinTypeId by remember { mutableStateOf("") }
     var sugar by remember { mutableStateOf("") }
     var carboExch by remember { mutableStateOf("") }
-    // ... add more fields for other note properties
+    var selectedMealId by remember { mutableStateOf<Int?>(null) }
+    var selectedPredefinedMealId by remember { mutableStateOf<Int?>(null) }
+    var showMealSelectionDialog by remember { mutableStateOf(false) }
+    var showPredefinedMealSelectionDialog by remember { mutableStateOf(false) }
+    val mContext = LocalContext.current
+    val mYear: Int
+    val mMonth: Int
+    val mDay: Int
+    val mCalendar = Calendar.getInstance()
+    mYear = mCalendar.get(Calendar.YEAR)
+    mMonth = mCalendar.get(Calendar.MONTH)
+    mDay = mCalendar.get(Calendar.DAY_OF_MONTH)
+    val mDate = remember { mutableStateOf("") }
+    val mDatePickerDialog = DatePickerDialog(
+        mContext,
+        { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
+            mDate.value = "$mDayOfMonth/${mMonth+1}/$mYear"
+        }, mYear, mMonth, mDay
+    )
 
     Scaffold(
         topBar = {
@@ -57,13 +81,13 @@ fun AddNoteScreen(
                     IconButton(onClick = {
                         val newNote = Note(
                             userId = 1, // Replace with actual user ID
-                            timestamp = System.currentTimeMillis(), // Or get timestamp from user input
+                            timestamp = System.currentTimeMillis(),
                             glucoseLevel = glucoseLevel.toDoubleOrNull() ?: 0.0,
-                            insulinTypeId = insulinTypeId.toIntOrNull(), // Convert to Int if needed
+                            insulinTypeId = insulinTypeId.toIntOrNull(),
                             noteText = noteText,
                             sugar = sugar.toDoubleOrNull() ?: 0.0,
                             carboExch = carboExch.toDoubleOrNull() ?: 0.0,
-                            mealId = null, // Set if linked to a meal
+                            mealId = selectedMealId,
                             activityId = null // Set if linked to an activity
                         )
                         viewModel.insertNote(newNote)
@@ -98,23 +122,102 @@ fun AddNoteScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Add fields for insulinTypeId, sugar, carboExch, etc.
-            // Consider using dropdowns or other selection UI elements for insulinTypeId and meal/activity selection
+            OutlinedTextField(
+                value = mDate.value,
+                onValueChange = { mDate.value = it },
+                label = { Text("Date") },
+                modifier = Modifier.fillMaxWidth(),
+                readOnly = true
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = {
+                mDatePickerDialog.show()
+            }, modifier = Modifier.fillMaxWidth()) {
+                Text(text = "Open Date Picker")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
 
-            // Example of adding a meal from the database (replace with your actual implementation)
+            OutlinedTextField(
+                value = insulinTypeId,
+                onValueChange = { insulinTypeId = it },
+                label = { Text("Insulin Type ID") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = sugar,
+                onValueChange = { sugar = it },
+                label = { Text("Sugar") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = carboExch,
+                onValueChange = { carboExch = it },
+                label = { Text("Carbohydrate Exchange") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
             Button(
-                onClick = { /* TODO: Implement logic to select meal from database */ },
+                onClick = { showMealSelectionDialog = true },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Select Meal from Database")
             }
 
-            // Example of adding a predefined meal (replace with your actual implementation)
             Button(
-                onClick = { /* TODO: Implement logic to select predefined meal */ },
+                onClick = { showPredefinedMealSelectionDialog = true },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Select Predefined Meal")
+            }
+
+            // Dialogs for meal selection
+            if (showMealSelectionDialog) {
+                // TODO: Implement Meal Selection Dialog
+                AlertDialog(
+                    onDismissRequest = { showMealSelectionDialog = false },
+                    title = { Text("Select Meal") },
+                    text = { Text("Meal selection logic here") }, // Placeholder
+                    confirmButton = {
+                        Button(onClick = {
+                            // Handle meal selection
+                            showMealSelectionDialog = false
+                        }) {
+                            Text("Select")
+                        }
+                    },
+                    dismissButton = {
+                        Button(onClick = { showMealSelectionDialog = false }) {
+                            Text("Cancel")
+                        }
+                    }
+                )
+            }
+
+            if (showPredefinedMealSelectionDialog) {
+                // TODO: Implement Predefined Meal Selection Dialog
+                AlertDialog(
+                    onDismissRequest = { showPredefinedMealSelectionDialog = false },
+                    title = { Text("Select Predefined Meal") },
+                    text = { Text("Predefined meal selection logic here") }, // Placeholder
+                    confirmButton = {
+                        Button(onClick = {
+                            // Handle predefined meal selection
+                            showPredefinedMealSelectionDialog = false
+                        }) {
+                            Text("Select")
+                        }
+                    },
+                    dismissButton = {
+                        Button(onClick = { showPredefinedMealSelectionDialog = false }) {
+                            Text("Cancel")
+                        }
+                    }
+                )
             }
         }
     }

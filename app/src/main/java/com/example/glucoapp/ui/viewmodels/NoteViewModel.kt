@@ -1,4 +1,4 @@
-package com.example.glucoapp.ui.viewmodels
+package com.example.glucoapp.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

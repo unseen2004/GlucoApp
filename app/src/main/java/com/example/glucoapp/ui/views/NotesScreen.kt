@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.glucoapp.navigation.Screen
-import com.example.glucoapp.ui.viewmodels.NoteViewModel
+import com.example.glucoapp.presentation.viewmodels.NoteViewModel
 
 @Composable
 fun NotesScreen(
