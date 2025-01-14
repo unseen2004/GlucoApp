@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import com.example.glucoapp.ui.viewmodels.MainViewModel
 import com.example.glucoapp.ui.viewmodels.NotesViewModel
-import com.example.glucoapp.data.db.entities.Note
+import com.example.glucoapp.data.db.entities.Notes
 import com.example.glucoapp.navigation.Screen
 import kotlinx.coroutines.launch
 
@@ -33,7 +33,7 @@ fun AddNoteScreen(navController: NavController, notesViewModel: NotesViewModel =
     val coroutineScope = rememberCoroutineScope() // Create a coroutine scope
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Add Note") }) }
+        topBar = { TopAppBar(title = { Text("Add Notes") }) }
     ) { innerPadding ->
         Column(modifier = Modifier
             .padding(innerPadding)
@@ -67,7 +67,7 @@ fun AddNoteScreen(navController: NavController, notesViewModel: NotesViewModel =
             OutlinedTextField(
                 value = noteText,
                 onValueChange = { noteText = it },
-                label = { Text("Note Text") },
+                label = { Text("Notes Text") },
                 modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(
@@ -87,7 +87,7 @@ fun AddNoteScreen(navController: NavController, notesViewModel: NotesViewModel =
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
-                    val newNote = Note(
+                    val newNotes = Notes(
                         userId = notesViewModel.getUserId(mainViewModel), // Replace with actual user ID
                         timestamp = System.currentTimeMillis(), // Use current time
                         glucoseLevel = glucoseLevel.toDoubleOrNull() ?: 0.0,
@@ -102,13 +102,13 @@ fun AddNoteScreen(navController: NavController, notesViewModel: NotesViewModel =
                         activityId = null // Replace with actual activity ID if applicable
                     )
                     coroutineScope.launch {
-                        notesViewModel.insertNote(newNote)
+                        notesViewModel.insertNote(newNotes)
                         navController.navigate(Screen.Notes.route)
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Save Note")
+                Text("Save Notes")
             }
         }
     }

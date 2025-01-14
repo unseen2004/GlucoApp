@@ -8,7 +8,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.glucoapp.ui.viewmodels.MainViewModel
+import com.example.glucoapp.presentation.MainViewModel
 import com.example.glucoapp.ui.viewmodels.SettingsViewModel
 
 @Composable

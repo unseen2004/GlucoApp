@@ -30,8 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.glucoapp.data.db.entities.Note
 import com.example.glucoapp.navigation.Screen
+import com.example.glucoapp.navigation.Screen.Notes
 import com.example.glucoapp.ui.viewmodels.NotesViewModel
 
 @Composable
@@ -42,7 +42,7 @@ fun NotesScreen(navController: NavController, notesViewModel: NotesViewModel = h
         topBar = { TopAppBar(title = { Text("Notes") }) },
         floatingActionButton = {
             FloatingActionButton(onClick = { navController.navigate(Screen.AddNote.route) }) {
-                Icon(Icons.Filled.Add, contentDescription = "Add Note")
+                Icon(Icons.Filled.Add, contentDescription = "Add Notes")
             }
         }
     ) { innerPadding ->
@@ -57,9 +57,9 @@ fun NotesScreen(navController: NavController, notesViewModel: NotesViewModel = h
 
 @Composable
 fun NotesContent(
-    notes: List<Note>,
-    onDeleteNote: (Note) -> Unit,
-    onUpdateNote: (Note) -> Unit,
+    notes: List<Notes>,
+    onDeleteNote: (Notes) -> Unit,
+    onUpdateNote: (Notes) -> Unit,
     modifier: Modifier = Modifier // Add default Modifier
 ) {
     LazyColumn(
@@ -71,7 +71,7 @@ fun NotesContent(
             key = { note -> note.noteId } // Provide a unique key
         ) { note ->
             NoteItem(
-                note = note,
+                notes = note,
                 onDelete = { onDeleteNote(note) },
                 onUpdate = { updatedNote -> onUpdateNote(updatedNote) }
             )
@@ -80,9 +80,9 @@ fun NotesContent(
 }
 
 @Composable
-fun NoteItem(note: Note, onDelete: () -> Unit, onUpdate: (Note) -> Unit) {
+fun NoteItem(notes: Notes, onDelete: () -> Unit, onUpdate: (Notes) -> Unit) {
     var isEditing by remember { mutableStateOf(false) }
-    var updatedNoteText by remember { mutableStateOf(note.noteText) }
+    var updatedNoteText by remember { mutableStateOf(value = notes.noteText) }
 
     Card(modifier = Modifier.padding(8.dp), elevation = 2.dp) {
         Column(modifier = Modifier.padding(8.dp)) {
@@ -90,11 +90,11 @@ fun NoteItem(note: Note, onDelete: () -> Unit, onUpdate: (Note) -> Unit) {
                 OutlinedTextField(
                     value = updatedNoteText,
                     onValueChange = { updatedNoteText = it },
-                    label = { Text("Note Text") }
+                    label = { Text("Notes Text") }
                 )
                 Button(
                     onClick = {
-                        onUpdate(note.copy(noteText = updatedNoteText))
+                        onUpdate(notes.copy(noteText = updatedNoteText))
                         isEditing = false
                     }
                 ) {
@@ -104,8 +104,8 @@ fun NoteItem(note: Note, onDelete: () -> Unit, onUpdate: (Note) -> Unit) {
                     Text("Cancel")
                 }
             } else {
-                Text(text = "Glucose Level: ${note.glucoseLevel}")
-                Text(text = "Note: ${note.noteText}")
+                Text(text = "Glucose Level: ${notes.glucoseLevel}")
+                Text(text = "Notes: ${notes.noteText}")
                 Row {
                     IconButton(onClick = { isEditing = true }) {
                         Icon(Icons.Filled.Edit, contentDescription = "Edit")

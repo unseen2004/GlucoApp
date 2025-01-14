@@ -3,6 +3,7 @@ package com.example.glucoapp.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.glucoapp.data.repository.AppRepository
+import com.example.glucoapp.presentation.MainViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

@@ -1,14 +1,26 @@
 package com.example.glucoapp.data.db.entities
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import androidx.room.ColumnInfo
 
-@Entity
+@Entity(
+    tableName = "Activities",
+    foreignKeys = [
+        ForeignKey(
+            entity = User::class,
+            parentColumns = ["userId"],
+            childColumns = ["userId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
 data class Activity(
     @PrimaryKey(autoGenerate = true) val activityId: Int = 0,
-    val userId: Int = 0, // Assume a single user for now
-    val timestamp: Long = 0L,
-    val activityType: String = "",
-    val duration: Int = 0, // in minutes
-    val notes: String = ""
+    @ColumnInfo(name = "userId") val userId: Int,
+    @ColumnInfo(name = "timestamp") val timestamp: Long,
+    @ColumnInfo(name = "activityType") val activityType: String,
+    @ColumnInfo(name = "duration") val duration: Int,
+    @ColumnInfo(name = "notes") val notes: String?
 )

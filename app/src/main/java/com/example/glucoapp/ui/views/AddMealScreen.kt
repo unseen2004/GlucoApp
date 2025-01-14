@@ -8,12 +8,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.glucoapp.ui.viewmodels.MainViewModel
 import com.example.glucoapp.ui.viewmodels.MealsViewModel
 import com.example.glucoapp.data.db.entities.Meal
 import com.example.glucoapp.navigation.Screen
+import com.example.glucoapp.presentation.MainViewModel
 import kotlinx.coroutines.launch
 
 @Composable

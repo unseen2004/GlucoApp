@@ -3,29 +3,46 @@ package com.example.glucoapp.data.db.entities
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import androidx.room.ColumnInfo
 
 @Entity(
+    tableName = "Notes",
     foreignKeys = [
         ForeignKey(
             entity = User::class,
             parentColumns = ["userId"],
             childColumns = ["userId"],
             onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = InsulinType::class,
+            parentColumns = ["typeId"],
+            childColumns = ["insulinTypeId"],
+            onDelete = ForeignKey.SET_NULL
+        ),
+        ForeignKey(
+            entity = Meal::class,
+            parentColumns = ["mealId"],
+            childColumns = ["mealId"],
+            onDelete = ForeignKey.SET_NULL
+        ),
+        ForeignKey(
+            entity = Activity::class,
+            parentColumns = ["activityId"],
+            childColumns = ["activityId"],
+            onDelete = ForeignKey.SET_NULL
         )
     ]
 )
 data class Note(
     @PrimaryKey(autoGenerate = true) val noteId: Int = 0,
-    val userId: Int = 0, // Assume a single user for now
-    val timestamp: Long = 0L,
-    val glucoseLevel: Double = 0.0,
-    val insulinDoseFast: Double = 0.0, // Placeholder
-    val insulinDoseFastCorr: Double = 0.0, // Placeholder
-    val insulinDoseLong: Double = 0.0, // Placeholder
-    val insulinType: Int = 0, // Placeholder
-    val noteText: String = "",
-    val sugar: Double = 0.0, // Placeholder
-    val carboExch: Double = 0.0, // Placeholder
-    val mealId: Int? = null, // Placeholder
-    val activityId: Int? = null // Placeholder
+    @ColumnInfo(name = "userId") val userId: Int,
+    @ColumnInfo(name = "timestamp") val timestamp: Long,
+    @ColumnInfo(name = "glucoseLevel") val glucoseLevel: Double,
+    @ColumnInfo(name = "insulinTypeId") val insulinTypeId: Int?,
+    @ColumnInfo(name = "noteText") val noteText: String?,
+    @ColumnInfo(name = "sugar") val sugar: Double?,
+    @ColumnInfo(name = "carboExch") val carboExch: Double?,
+    @ColumnInfo(name = "mealId") val mealId: Int?,
+    @ColumnInfo(name = "activityId") val activityId: Int?
 )

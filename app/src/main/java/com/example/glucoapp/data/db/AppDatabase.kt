@@ -5,24 +5,30 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.glucoapp.data.db.daos.ActivityDao
+import com.example.glucoapp.data.db.daos.InsulinTypeDao
 import com.example.glucoapp.data.db.daos.MealDao
 import com.example.glucoapp.data.db.daos.NoteDao
+import com.example.glucoapp.data.db.daos.PredefinedMealDao
 import com.example.glucoapp.data.db.daos.UserDao
 import com.example.glucoapp.data.db.entities.Activity
+import com.example.glucoapp.data.db.entities.InsulinType
 import com.example.glucoapp.data.db.entities.Meal
 import com.example.glucoapp.data.db.entities.Note
+import com.example.glucoapp.data.db.entities.PredefinedMeal
 import com.example.glucoapp.data.db.entities.User
 
 @Database(
-    entities = [User::class, Note::class, Meal::class, Activity::class],
-    version = 1,
-    exportSchema = false
+    entities = [User::class, Note::class, Meal::class, Activity::class, InsulinType::class, PredefinedMeal::class],
+    version = 5, // Increment the version number
+    exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun noteDao(): NoteDao
     abstract fun mealDao(): MealDao
     abstract fun activityDao(): ActivityDao
+    abstract fun insulinTypeDao(): InsulinTypeDao
+    abstract fun predefinedMealDao(): PredefinedMealDao
 
     companion object {
         @Volatile
@@ -33,9 +39,9 @@ abstract class AppDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "gluco_app_database"
+                    "glucose_tracker_database"
                 )
-                    .fallbackToDestructiveMigration()
+                    .addMigrations(MIGRATION_4_5) // Add the migration from the external file
                     .build()
                 INSTANCE = instance
                 instance

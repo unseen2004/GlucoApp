@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.glucoapp.data.db.entities.Meal
 import com.example.glucoapp.data.repository.AppRepository
+import com.example.glucoapp.presentation.MainViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,7 +28,7 @@ class MealsViewModel @Inject constructor(
         // This method will be updated to use ViewModelProvider
     }
 
-    suspend fun insertMeal(meal: Meal): Long {
+    suspend fun insertMeal(meal: Meal) {
         return repository.insertMeal(meal)
     }
 
