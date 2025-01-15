@@ -1,9 +1,5 @@
 package com.example.glucoapp.ui.views
 
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
-import android.widget.DatePicker
-import android.widget.TimePicker
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,9 +10,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -35,9 +29,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.glucoapp.data.db.models.Note
 import com.example.glucoapp.navigation.Screen
-import com.example.glucoapp.ui.viewmodels.NoteViewModel
-import java.util.Calendar
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.input.KeyboardType
@@ -45,9 +36,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.glucoapp.data.db.models.Activity
 import com.example.glucoapp.data.db.models.Meal
 import com.example.glucoapp.data.db.models.PredefinedMeal
+import com.example.glucoapp.ui.viewmodels.NoteViewModel
 import kotlinx.coroutines.launch
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-
+import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.MaterialTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,7 +50,7 @@ fun AddNoteScreen(
     // State variables for the Note fields
     var noteText by remember { mutableStateOf("") }
     var glucoseLevel by remember { mutableStateOf("") }
-    var selectedInsulinTypeId by remember { mutableStateOf<Int?>(null) }
+    var insulinTaken by remember { mutableStateOf<Boolean?>(null) } // Yes/No for insulin taken
     var sugar by remember { mutableStateOf("") }
     var carboExch by remember { mutableStateOf("") }
 
@@ -66,7 +58,7 @@ fun AddNoteScreen(
     var selectedMeal by remember { mutableStateOf<Meal?>(null) }
     var selectedPredefinedMeal by remember { mutableStateOf<PredefinedMeal?>(null) }
     var selectedActivity by remember { mutableStateOf<Activity?>(null) }
-
+    var selectedActivityId by remember { mutableStateOf<Int?>(null) }
     // State variables for dialog visibility
     var showMealSelectionDialog by remember { mutableStateOf(false) }
     var showPredefinedMealSelectionDialog by remember { mutableStateOf(false) }
@@ -76,34 +68,6 @@ fun AddNoteScreen(
     var activityName by remember { mutableStateOf("") }
     var activityDuration by remember { mutableStateOf("") }
     var activityNotes by remember { mutableStateOf("") }
-
-    // State for Insulin Types
-    val insulinTypes by viewModel.insulinTypes.collectAsState()
-    var expanded by remember { mutableStateOf(false) }
-
-    // Date and Time
-    val mContext = LocalContext.current
-    val mCalendar = Calendar.getInstance()
-    val mYear = mCalendar.get(Calendar.YEAR)
-    val mMonth = mCalendar.get(Calendar.MONTH)
-    val mDay = mCalendar.get(Calendar.DAY_OF_MONTH)
-    val mDate = remember { mutableStateOf("") }
-    val mDatePickerDialog = DatePickerDialog(
-        mContext,
-        { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
-            mDate.value = "$mDayOfMonth/${mMonth + 1}/$mYear"
-        }, mYear, mMonth, mDay
-    )
-    val mHour = mCalendar[Calendar.HOUR_OF_DAY]
-    val mMinute = mCalendar[Calendar.MINUTE]
-    val mTime = remember { mutableStateOf("") }
-    val mTimePickerDialog = TimePickerDialog(
-        mContext,
-        { _: TimePicker, mHour: Int, mMinute: Int ->
-            mTime.value = "$mHour:$mMinute"
-        }, mHour, mMinute,
-        false
-    )
 
     // Collect StateFlows from ViewModel
     val meals by viewModel.meals.collectAsState()
@@ -133,39 +97,16 @@ fun AddNoteScreen(
                 },
                 actions = {
                     IconButton(onClick = {
-                        val timestamp = run {
-                            val dateParts = mDate.value.split("/")
-                            val timeParts = mTime.value.split(":")
-                            if (dateParts.size == 3 && timeParts.size == 2) {
-                                val day = dateParts[0].toIntOrNull() ?: 0
-                                val month = dateParts[1].toIntOrNull() ?: 0
-                                val year = dateParts[2].toIntOrNull() ?: 0
-                                val hour = timeParts[0].toIntOrNull() ?: 0
-                                val minute = timeParts[1].toIntOrNull() ?: 0
-
-                                Calendar.getInstance().apply {
-                                    set(Calendar.YEAR, year)
-                                    set(Calendar.MONTH, month - 1)
-                                    set(Calendar.DAY_OF_MONTH, day)
-                                    set(Calendar.HOUR_OF_DAY, hour)
-                                    set(Calendar.MINUTE, minute)
-                                    set(Calendar.SECOND, 0)
-                                    set(Calendar.MILLISECOND, 0)
-                                }.timeInMillis
-                            } else {
-                                System.currentTimeMillis()
-                            }
-                        }
                         val newNote = Note(
                             userId = 1, // TODO: Replace with actual user ID
-                            timestamp = timestamp,
+                            timestamp = System.currentTimeMillis(), // Current time
                             glucoseLevel = glucoseLevel.toDoubleOrNull() ?: 0.0,
-                            insulinTypeId = selectedInsulinTypeId,
+                            insulinTypeId = if (insulinTaken == true) 1 else null, // Assuming 1 is the ID for "Yes"
                             noteText = noteText,
                             sugar = sugar.toDoubleOrNull() ?: 0.0,
                             carboExch = carboExch.toDoubleOrNull() ?: 0.0,
                             mealId = selectedMeal?.mealId,
-                            activityId = selectedActivity?.activityId // Now potentially set
+                            activityId = selectedActivity?.activityId
                         )
                         viewModel.insertNote(newNote)
                         navController.navigate(Screen.Main.route)
@@ -200,74 +141,32 @@ fun AddNoteScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Date Picker
-            OutlinedTextField(
-                value = mDate.value,
-                onValueChange = { mDate.value = it },
-                label = { Text("Date") },
+            // Insulin Taken Selection (Yes/No)
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                readOnly = true
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(
-                onClick = { mDatePickerDialog.show() },
-                modifier = Modifier.fillMaxWidth()
+                horizontalArrangement = Arrangement.SpaceAround
             ) {
-                Text(text = "Open Date Picker")
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Time Picker
-            OutlinedTextField(
-                value = mTime.value,
-                onValueChange = { mTime.value = it },
-                label = { Text("Time") },
-                modifier = Modifier.fillMaxWidth(),
-                readOnly = true
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(
-                onClick = { mTimePickerDialog.show() },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = "Open Time Picker")
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Insulin Type Selection
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded },
-            ) {
-                OutlinedTextField(
-                    modifier = Modifier
-                        .menuAnchor()
-                        .fillMaxWidth(),
-                    readOnly = true,
-                    value = selectedInsulinTypeId?.let { id ->
-                        insulinTypes.firstOrNull { it.typeId == id }?.typeName
-                    } ?: "",
-                    onValueChange = {},
-                    label = { Text("Insulin Type") },
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(
-                            expanded = expanded
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = insulinTaken == true,
+                        onClick = { insulinTaken = true },
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = MaterialTheme.colorScheme.primary, // Set the color you want
+                            unselectedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f) // Set the unselected color
                         )
-                    },
-                )
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                ) {
-                    insulinTypes.forEach { insulinType ->
-                        DropdownMenuItem(
-                            onClick = {
-                                selectedInsulinTypeId = insulinType.typeId
-                                expanded = false
-                            },
-                            text = { Text(insulinType.typeName) }
+                    )
+                    Text("Yes")
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = insulinTaken == false,
+                        onClick = { insulinTaken = false },
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = MaterialTheme.colorScheme.primary,
+                            unselectedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
-                    }
+                    )
+                    Text("No")
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -358,7 +257,10 @@ fun AddNoteScreen(
                                     duration = activityDuration.toIntOrNull() ?: 0,
                                     notes = activityNotes
                                 )
-                                viewModel.insertActivity(newActivity)
+                                // Access repository through viewModel
+                                viewModel.insertActivity(newActivity) { newId ->
+                                    selectedActivityId = newId
+                                }
                                 showActivityDialog = false
                             }
                         }) {

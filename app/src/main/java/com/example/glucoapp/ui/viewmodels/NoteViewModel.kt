@@ -34,11 +34,13 @@ class NoteViewModel @Inject constructor(private val repository: AppRepository) :
     private val _activities = MutableStateFlow<List<Activity>>(emptyList())
     val activities: StateFlow<List<Activity>> = _activities.asStateFlow()
 
-    private val _insulinTypes = MutableStateFlow<List<InsulinType>>(emptyList())
-    val insulinTypes: StateFlow<List<InsulinType>> = _insulinTypes.asStateFlow()
+
 
     private val _selectedActivityId = MutableStateFlow<Int?>(null)
     val selectedActivityId: StateFlow<Int?> = _selectedActivityId.asStateFlow()
+
+    private val _insulinTypes = MutableStateFlow<List<InsulinType>>(emptyList())
+    val insulinTypes: StateFlow<List<InsulinType>> = _insulinTypes.asStateFlow()
 
     init {
         loadInsulinTypes()
@@ -113,5 +115,10 @@ class NoteViewModel @Inject constructor(private val repository: AppRepository) :
     fun setSelectedActivityId(activityId: Int?) {
         _selectedActivityId.value = activityId
     }
-
+    fun insertActivity(activity: Activity, callback: (Int) -> Unit) {
+        viewModelScope.launch {
+            val newActivityId = repository.insertActivity(activity)
+            callback(newActivityId.toInt())
+        }
+    }
 }
