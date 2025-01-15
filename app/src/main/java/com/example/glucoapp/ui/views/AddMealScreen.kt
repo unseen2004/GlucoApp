@@ -27,7 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.glucoapp.data.db.entities.Meal
+import com.example.glucoapp.data.db.models.Meal
 import com.example.glucoapp.navigation.Screen
 import com.example.glucoapp.ui.viewmodels.MealsViewModel
 

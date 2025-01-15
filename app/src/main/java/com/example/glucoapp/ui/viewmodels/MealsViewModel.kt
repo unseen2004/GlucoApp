@@ -2,8 +2,8 @@ package com.example.glucoapp.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.glucoapp.data.db.entities.Meal
-import com.example.glucoapp.data.db.entities.User
+import com.example.glucoapp.data.db.models.Meal
+import com.example.glucoapp.data.db.models.User
 import com.example.glucoapp.data.repository.AppRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.OnConflictStrategy
-import com.example.glucoapp.data.db.entities.InsulinType
+import com.example.glucoapp.data.db.models.InsulinType
 import kotlinx.coroutines.flow.Flow
 
 @Dao

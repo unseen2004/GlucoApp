@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.glucoapp.navigation.Screen
-import com.example.glucoapp.presentation.views.NotesScreen
 import com.example.glucoapp.ui.viewmodels.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)

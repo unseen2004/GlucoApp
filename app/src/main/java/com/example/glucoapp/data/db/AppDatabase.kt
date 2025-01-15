@@ -10,12 +10,12 @@ import com.example.glucoapp.data.db.daos.MealDao
 import com.example.glucoapp.data.db.daos.NoteDao
 import com.example.glucoapp.data.db.daos.PredefinedMealDao
 import com.example.glucoapp.data.db.daos.UserDao
-import com.example.glucoapp.data.db.entities.Activity
-import com.example.glucoapp.data.db.entities.InsulinType
-import com.example.glucoapp.data.db.entities.Meal
-import com.example.glucoapp.data.db.entities.Note
-import com.example.glucoapp.data.db.entities.PredefinedMeal
-import com.example.glucoapp.data.db.entities.User
+import com.example.glucoapp.data.db.models.Activity
+import com.example.glucoapp.data.db.models.InsulinType
+import com.example.glucoapp.data.db.models.Meal
+import com.example.glucoapp.data.db.models.Note
+import com.example.glucoapp.data.db.models.PredefinedMeal
+import com.example.glucoapp.data.db.models.User
 
 @Database(
     entities = [User::class, Note::class, Meal::class, Activity::class, InsulinType::class, PredefinedMeal::class],

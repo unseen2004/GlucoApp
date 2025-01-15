@@ -6,13 +6,13 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.OnConflictStrategy
-import com.example.glucoapp.data.db.entities.Activity
+import com.example.glucoapp.data.db.models.Activity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ActivityDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(activity: Activity)
+    suspend fun insert(activity: Activity): Long // Return Long (the new ID)
 
     @Update
     suspend fun update(activity: Activity)

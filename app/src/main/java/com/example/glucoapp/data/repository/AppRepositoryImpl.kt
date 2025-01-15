@@ -1,7 +1,17 @@
 package com.example.glucoapp.data.repository
 
-import com.example.glucoapp.data.db.daos.*
-import com.example.glucoapp.data.db.entities.*
+import com.example.glucoapp.data.db.daos.ActivityDao
+import com.example.glucoapp.data.db.daos.InsulinTypeDao
+import com.example.glucoapp.data.db.daos.MealDao
+import com.example.glucoapp.data.db.daos.NoteDao
+import com.example.glucoapp.data.db.daos.PredefinedMealDao
+import com.example.glucoapp.data.db.daos.UserDao
+import com.example.glucoapp.data.db.models.Activity
+import com.example.glucoapp.data.db.models.InsulinType
+import com.example.glucoapp.data.db.models.Meal
+import com.example.glucoapp.data.db.models.Note
+import com.example.glucoapp.data.db.models.PredefinedMeal
+import com.example.glucoapp.data.db.models.User
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -15,7 +25,7 @@ class AppRepositoryImpl @Inject constructor(
 ) : AppRepository {
 
     // User operations
-    override suspend fun insertUser(user: User): Long = userDao.insert(user)
+    override suspend fun insertUser(user: User) = userDao.insert(user)
     override suspend fun updateUser(user: User) = userDao.update(user)
     override suspend fun deleteUser(user: User) = userDao.delete(user)
     override fun getUserById(userId: Int): Flow<User?> = userDao.getUserById(userId)
@@ -35,7 +45,9 @@ class AppRepositoryImpl @Inject constructor(
     override fun getMealById(mealId: Int): Flow<Meal?> = mealDao.getMealById(mealId)
 
     // Activity operations
-    override suspend fun insertActivity(activity: Activity) = activityDao.insert(activity)
+    override suspend fun insertActivity(activity: Activity): Long {
+        return activityDao.insert(activity)
+    }
     override suspend fun updateActivity(activity: Activity) = activityDao.update(activity)
     override suspend fun deleteActivity(activity: Activity) = activityDao.delete(activity)
     override fun getActivitiesByUserId(userId: Int): Flow<List<Activity>> = activityDao.getActivitiesByUserId(userId)

@@ -2,7 +2,7 @@ package com.example.glucoapp.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.glucoapp.data.db.entities.User
+import com.example.glucoapp.data.db.models.User
 import com.example.glucoapp.data.repository.AppRepository
 import com.example.glucoapp.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel

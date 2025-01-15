@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.glucoapp.data.db.entities.User
+import com.example.glucoapp.data.db.models.User
 import com.example.glucoapp.ui.viewmodels.SettingsViewModel
 
 @Composable

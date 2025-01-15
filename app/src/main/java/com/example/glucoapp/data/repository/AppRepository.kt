@@ -1,16 +1,16 @@
 package com.example.glucoapp.data.repository
 
-import com.example.glucoapp.data.db.entities.Activity
-import com.example.glucoapp.data.db.entities.InsulinType
-import com.example.glucoapp.data.db.entities.Meal
-import com.example.glucoapp.data.db.entities.Note
-import com.example.glucoapp.data.db.entities.PredefinedMeal
-import com.example.glucoapp.data.db.entities.User
+import com.example.glucoapp.data.db.models.Activity
+import com.example.glucoapp.data.db.models.InsulinType
+import com.example.glucoapp.data.db.models.Meal
+import com.example.glucoapp.data.db.models.Note
+import com.example.glucoapp.data.db.models.PredefinedMeal
+import com.example.glucoapp.data.db.models.User
 import kotlinx.coroutines.flow.Flow
 
 interface AppRepository {
     // User operations
-    suspend fun insertUser(user: User): Long
+    suspend fun insertUser(user: User): Long // Returns the ID of the new row
     suspend fun updateUser(user: User)
     suspend fun deleteUser(user: User)
     fun getUserById(userId: Int): Flow<User?>
@@ -30,7 +30,7 @@ interface AppRepository {
     fun getMealById(mealId: Int): Flow<Meal?>
 
     // Activity operations
-    suspend fun insertActivity(activity: Activity)
+    suspend fun insertActivity(activity: Activity): Long // Return Long
     suspend fun updateActivity(activity: Activity)
     suspend fun deleteActivity(activity: Activity)
     fun getActivitiesByUserId(userId: Int): Flow<List<Activity>>

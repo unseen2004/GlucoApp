@@ -1,4 +1,4 @@
-package com.example.glucoapp.data.db.entities
+package com.example.glucoapp.data.db.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
