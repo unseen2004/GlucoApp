@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.asStateFlow
 @HiltViewModel
 class MealsViewModel @Inject constructor(private val repository: AppRepository) : ViewModel() {
 
-    // ... other functions (loadMealsByUserId, etc.) ...
     private val _meals = MutableStateFlow<List<Meal>>(emptyList())
     val meals: StateFlow<List<Meal>> = _meals.asStateFlow()
 
@@ -45,16 +44,16 @@ class MealsViewModel @Inject constructor(private val repository: AppRepository) 
         }
     }
 
-    fun updateMeal(meal: Meal) {
+    fun deleteMeal(meal: Meal) {
         viewModelScope.launch {
-            repository.updateMeal(meal)
+            repository.deleteMeal(meal)
             _user.value?.userId?.let { loadMealsByUserId(it) }
         }
     }
 
-    fun deleteMeal(meal: Meal) {
+    fun updateMeal(meal: Meal) {
         viewModelScope.launch {
-            repository.deleteMeal(meal)
+            repository.updateMeal(meal)
             _user.value?.userId?.let { loadMealsByUserId(it) }
         }
     }
