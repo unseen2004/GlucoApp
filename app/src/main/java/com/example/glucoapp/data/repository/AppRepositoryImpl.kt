@@ -56,7 +56,9 @@ class AppRepositoryImpl @Inject constructor(
     override suspend fun insertInsulinType(insulinType: InsulinType) = insulinTypeDao.insert(insulinType)
     override suspend fun updateInsulinType(insulinType: InsulinType) = insulinTypeDao.update(insulinType)
     override suspend fun deleteInsulinType(insulinType: InsulinType) = insulinTypeDao.delete(insulinType)
-    override fun getAllInsulinTypes(): Flow<List<InsulinType>> = insulinTypeDao.getAllInsulinTypes()
+    override fun getAllInsulinTypes(): Flow<List<InsulinType>> {
+        return insulinTypeDao.getAllInsulinTypes()
+    }
 
     // PredefinedMeal operations
     override suspend fun insertPredefinedMeal(predefinedMeal: PredefinedMeal) = predefinedMealDao.insert(predefinedMeal)

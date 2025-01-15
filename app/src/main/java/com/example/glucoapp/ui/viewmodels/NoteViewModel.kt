@@ -39,6 +39,7 @@ class NoteViewModel @Inject constructor(private val repository: AppRepository) :
     private val _selectedActivityId = MutableStateFlow<Int?>(null)
     val selectedActivityId: StateFlow<Int?> = _selectedActivityId.asStateFlow()
 
+
     private val _insulinTypes = MutableStateFlow<List<InsulinType>>(emptyList())
     val insulinTypes: StateFlow<List<InsulinType>> = _insulinTypes.asStateFlow()
 
@@ -46,7 +47,7 @@ class NoteViewModel @Inject constructor(private val repository: AppRepository) :
         loadInsulinTypes()
     }
 
-    private fun loadInsulinTypes() {
+    fun loadInsulinTypes() {
         viewModelScope.launch {
             repository.getAllInsulinTypes().collect { types ->
                 _insulinTypes.value = types

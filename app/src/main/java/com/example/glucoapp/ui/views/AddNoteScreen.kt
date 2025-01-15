@@ -40,6 +40,12 @@ import com.example.glucoapp.ui.viewmodels.NoteViewModel
 import kotlinx.coroutines.launch
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import com.example.glucoapp.data.db.models.InsulinType
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.firstOrNull
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.DropdownMenuItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,6 +79,19 @@ fun AddNoteScreen(
     val meals by viewModel.meals.collectAsState()
     val predefinedMeals by viewModel.predefinedMeals.collectAsState()
 
+    var selectedInsulinType by remember { mutableStateOf<InsulinType?>(null) }
+    var insulinTypeExpanded by remember { mutableStateOf(false) }
+
+    // Collect insulin types from the ViewModel
+    val insulinTypes by viewModel.insulinTypes.collectAsState()
+
+    // Load insulin types when the screen is first shown
+    LaunchedEffect(Unit) {
+        if (insulinTypes.isEmpty()) {
+            viewModel.loadInsulinTypes()
+        }
+    }
+
     // Auto-calculate carboExch when a meal is selected
     LaunchedEffect(key1 = selectedMeal) {
         selectedMeal?.let { meal ->
@@ -99,14 +118,14 @@ fun AddNoteScreen(
                     IconButton(onClick = {
                         val newNote = Note(
                             userId = 1, // TODO: Replace with actual user ID
-                            timestamp = System.currentTimeMillis(), // Current time
+                            timestamp = System.currentTimeMillis(), // Current timestamp
                             glucoseLevel = glucoseLevel.toDoubleOrNull() ?: 0.0,
-                            insulinTypeId = if (insulinTaken == true) 1 else null, // Assuming 1 is the ID for "Yes"
+                            insulinTypeId = selectedInsulinType?.typeId,
                             noteText = noteText,
                             sugar = sugar.toDoubleOrNull() ?: 0.0,
                             carboExch = carboExch.toDoubleOrNull() ?: 0.0,
                             mealId = selectedMeal?.mealId,
-                            activityId = selectedActivity?.activityId
+                            activityId = selectedActivityId
                         )
                         viewModel.insertNote(newNote)
                         navController.navigate(Screen.Main.route)
@@ -141,35 +160,42 @@ fun AddNoteScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Insulin Taken Selection (Yes/No)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround
+// Insulin Type Selection
+            ExposedDropdownMenuBox(
+                expanded = insulinTypeExpanded,
+                onExpandedChange = { insulinTypeExpanded = !insulinTypeExpanded },
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(
-                        selected = insulinTaken == true,
-                        onClick = { insulinTaken = true },
-                        colors = RadioButtonDefaults.colors(
-                            selectedColor = MaterialTheme.colorScheme.primary, // Set the color you want
-                            unselectedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f) // Set the unselected color
+                OutlinedTextField(
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth(),
+                    readOnly = true,
+                    value = selectedInsulinType?.typeName ?: "",
+                    onValueChange = {},
+                    label = { Text("Insulin Type") },
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(
+                            expanded = insulinTypeExpanded
                         )
-                    )
-                    Text("Yes")
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(
-                        selected = insulinTaken == false,
-                        onClick = { insulinTaken = false },
-                        colors = RadioButtonDefaults.colors(
-                            selectedColor = MaterialTheme.colorScheme.primary,
-                            unselectedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    },
+                )
+                ExposedDropdownMenu(
+                    expanded = insulinTypeExpanded,
+                    onDismissRequest = { insulinTypeExpanded = false },
+                ) {
+                    insulinTypes.forEach { insulinType ->
+                        DropdownMenuItem(
+                            onClick = {
+                                selectedInsulinType = insulinType
+                                insulinTypeExpanded = false
+                            },
+                            text = { Text(insulinType.typeName) }
                         )
-                    )
-                    Text("No")
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
+
 
             // Sugar Field
             OutlinedTextField(
@@ -184,10 +210,9 @@ fun AddNoteScreen(
             // Carbohydrate Exchange Field (Read-only, auto-calculated)
             OutlinedTextField(
                 value = carboExch,
-                onValueChange = { /* Read-only field */ },
+                onValueChange = { carboExch = it },
                 label = { Text("Carbohydrate Exchange") },
                 modifier = Modifier.fillMaxWidth(),
-                readOnly = true
             )
             Spacer(modifier = Modifier.height(8.dp))
 

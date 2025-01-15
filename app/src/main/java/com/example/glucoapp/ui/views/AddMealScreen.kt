@@ -126,15 +126,6 @@ fun AddMealScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Add more fields for other meal properties here
-
-            // Example of adding a predefined meal (replace with your actual implementation)
-            Button(
-                onClick = { /* TODO: Implement logic to select predefined meal */ },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Select Predefined Meal")
-            }
         }
     }
 }
