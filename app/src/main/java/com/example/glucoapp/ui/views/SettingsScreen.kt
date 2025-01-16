@@ -1,6 +1,13 @@
 package com.example.glucoapp.presentation.views
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
@@ -34,6 +41,7 @@ import com.example.glucoapp.data.db.models.PredefinedMeal
 import com.example.glucoapp.navigation.Screen
 import com.example.glucoapp.presentation.viewmodels.SettingsUiState
 import com.example.glucoapp.presentation.viewmodels.SettingsViewModel
+import com.example.glucoapp.ui.viewmodels.LoginState
 import com.example.glucoapp.ui.viewmodels.MainViewModel
 
 @Composable
@@ -45,12 +53,14 @@ fun SettingsScreen(
     val uiState by settingsViewModel.uiState.collectAsState()
     val insulinTypes by settingsViewModel.insulinTypes.collectAsState()
     val predefinedMeals by settingsViewModel.predefinedMeals.collectAsState()
+    val loginState by mainViewModel.loginState.collectAsState()
 
     var showAddInsulinTypeDialog by remember { mutableStateOf(false) }
     var showAddPredefinedMealDialog by remember { mutableStateOf(false) }
     var showChangePasswordDialog by remember { mutableStateOf(false) }
     var showChangeDoctorPasswordDialog by remember { mutableStateOf(false) }
-    var currentUserId by remember { mutableStateOf(1) } // TODO: Get actual user ID
+    var showChangeLoginDialog by remember { mutableStateOf(false) }
+    var currentUserId by remember { mutableStateOf(1) }
 
     LaunchedEffect(Unit) {
         settingsViewModel.loadCurrentUser()
@@ -72,7 +82,21 @@ fun SettingsScreen(
                 Text("Error: ${state.message}")
             }
         }
-
+        // Display if the user is logged in as a doctor or a regular user
+        when (loginState) {
+            is LoginState.DoctorSuccess -> {
+                Text("Logged in as Doctor", style = MaterialTheme.typography.headlineSmall)
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            is LoginState.Success -> {
+                Text("Logged in as User", style = MaterialTheme.typography.headlineSmall)
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            else -> {
+                Text("", style = MaterialTheme.typography.headlineSmall)
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
         Button(
             onClick = { showAddInsulinTypeDialog = true },
             modifier = Modifier.fillMaxWidth()
@@ -99,6 +123,13 @@ fun SettingsScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Change Doctor Password")
+        }
+
+        Button(
+            onClick = { showChangeLoginDialog = true },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Change Login")
         }
 
         Button(
@@ -160,7 +191,53 @@ fun SettingsScreen(
                 }
             )
         }
+
+        if (showChangeLoginDialog) {
+            ChangeLoginDialog(
+                onDismiss = { showChangeLoginDialog = false },
+                onSave = { newUsername ->
+                    settingsViewModel.updateLogin(currentUserId, newUsername)
+                    showChangeLoginDialog = false
+                }
+            )
+        }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ChangeLoginDialog(onDismiss: () -> Unit, onSave: (String) -> Unit) {
+    var newUsername by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Change Login") },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = newUsername,
+                    onValueChange = { newUsername = it },
+                    label = { Text("New Username") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    onSave(newUsername)
+                },
+                enabled = newUsername.isNotEmpty()
+            ) {
+                Text("Save")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

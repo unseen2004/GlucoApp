@@ -14,6 +14,8 @@ import com.example.glucoapp.data.db.models.InsulinType
 import com.example.glucoapp.data.db.models.PredefinedMeal
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.firstOrNull
+import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
 
 sealed class SettingsUiState {
     object Loading : SettingsUiState()
@@ -105,26 +107,42 @@ class SettingsViewModel @Inject constructor(private val repository: AppRepositor
             loadPredefinedMeals() // Reload the list after deletion
         }
     }
-
-    fun updatePassword(userId: Int, newPasswordHash: String) {
+    fun updateLogin(userId: Int, newUsername: String) {
         viewModelScope.launch {
             val user = repository.getUserById(userId).firstOrNull()
             user?.let {
-                val updatedUser = it.copy(passwordHash = newPasswordHash)
+                val updatedUser = it.copy(username = newUsername)
+                repository.updateUser(updatedUser)
+                _uiState.value = SettingsUiState.Success(updatedUser)
+            }
+        }
+    }
+    fun updatePassword(userId: Int, newPassword: String) {
+        viewModelScope.launch {
+            val user = repository.getUserById(userId).firstOrNull()
+            user?.let {
+                val hashedNewPassword = hashPassword(newPassword) // Hash the new password
+                val updatedUser = it.copy(passwordHash = hashedNewPassword)
                 repository.updateUser(updatedUser)
                 _uiState.value = SettingsUiState.Success(updatedUser)
             }
         }
     }
 
-    fun updateDoctorPassword(userId: Int, newDoctorPasswordHash: String) {
+    fun updateDoctorPassword(userId: Int, newDoctorPassword: String) {
         viewModelScope.launch {
             val user = repository.getUserById(userId).firstOrNull()
             user?.let {
-                val updatedUser = it.copy(doctorPasswordHash = newDoctorPasswordHash)
+                val hashedNewDoctorPassword = hashPassword(newDoctorPassword) // Hash the new doctor password
+                val updatedUser = it.copy(doctorPasswordHash = hashedNewDoctorPassword)
                 repository.updateUser(updatedUser)
                 _uiState.value = SettingsUiState.Success(updatedUser)
             }
         }
+    }
+    private fun hashPassword(password: String): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        val hashBytes = digest.digest(password.toByteArray(StandardCharsets.UTF_8))
+        return hashBytes.joinToString("") { "%02x".format(it) }
     }
 }

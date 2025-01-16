@@ -24,11 +24,11 @@ import com.example.glucoapp.ui.viewmodels.NoteViewModel
 @Composable
 fun NotesScreen(
     navController: NavController,
-    viewModel: NoteViewModel = hiltViewModel()
+    viewModel: NoteViewModel = hiltViewModel(),
+    isDoctor: Boolean = false
 ) {
     val notes by viewModel.notes.collectAsState()
 
-    // Load notes when the screen is shown
     LaunchedEffect(Unit) {
         viewModel.loadUserById(1) // TODO: Replace with actual user ID
         viewModel.loadNotesByUserId(1) // TODO: Replace with actual user ID
@@ -38,18 +38,22 @@ fun NotesScreen(
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(notes) { note ->
                 NoteItem(note = note, onDeleteClick = {
-                    viewModel.deleteNote(note)
+                    if (!isDoctor) {
+                        viewModel.deleteNote(note)
+                    }
                 })
             }
         }
 
-        FloatingActionButton(
-            onClick = { navController.navigate(Screen.AddNote.route) },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
-        ) {
-            Icon(Icons.Filled.Add, "Add Note")
+        if (!isDoctor) {
+            FloatingActionButton(
+                onClick = { navController.navigate(Screen.AddNote.route) },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
+            ) {
+                Icon(Icons.Filled.Add, "Add Note")
+            }
         }
     }
 }
@@ -90,29 +94,13 @@ fun NoteItem(note: Note, onDeleteClick: () -> Unit) {
                 Spacer(modifier = Modifier.padding(2.dp))
             }
             if (note.mealId != null) {
-                //Text(text = "Meal ID: ${note.mealId}")
                 Text(text = "Meal added")
                 Spacer(modifier = Modifier.padding(2.dp))
             }
             if (note.activityId != null) {
-                //Text(text = "Activity ID: ${note.activityId}")
                 Text(text = "Activity added")
                 Spacer(modifier = Modifier.padding(2.dp))
             }
-
-            // Display additional details for activity, meal, and predefined meal
-//            note.activityId?.let {
-//                Text(text = "Activity Details: ${note.activityId}")
-//                Spacer(modifier = Modifier.padding(2.dp))
-//            }
-//            note.mealId?.let {
-//                Text(text = "Meal Details: ${note.mealId}")
-//                Spacer(modifier = Modifier.padding(2.dp))
-//            }
-//            note.insulinTypeId?.let {
-//                Text(text = "Predefined Meal Details: ${note.insulinTypeId}")
-//                Spacer(modifier = Modifier.padding(2.dp))
-//            }
 
             Box(
                 modifier = Modifier.fillMaxWidth(),

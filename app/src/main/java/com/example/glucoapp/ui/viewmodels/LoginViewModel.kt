@@ -1,5 +1,6 @@
 package com.example.glucoapp.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.glucoapp.data.db.models.User
@@ -12,6 +13,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.glucoapp.data.UserPreferences
 import kotlinx.coroutines.flow.asStateFlow
+import java.security.MessageDigest
+import java.nio.charset.StandardCharsets
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
@@ -28,13 +31,17 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             val user = repository.getUserByUsername(username).firstOrNull()
             if (user != null) {
-                if (user.passwordHash == password) {
-                    // Normal user login
+                val hashedPassword = hashPassword(password) // Hash the input password
+                Log.d("LoginViewModel", "Hashed input password: $hashedPassword")
+                Log.d("LoginViewModel", "Stored user password hash: ${user.passwordHash}")
+                Log.d("LoginViewModel", "Stored doctor password hash: ${user.doctorPasswordHash}")
+
+                if (user.passwordHash == hashedPassword) {
                     userPreferences.saveUserId(user.userId) // Save logged-in user ID
                     _loginState.value = LoginState.Success
-                } else if (user.doctorPasswordHash == password) {
-                    // Doctor login
+                } else if (user.doctorPasswordHash == hashedPassword) {
                     userPreferences.saveUserId(user.userId) // Save logged-in user ID (doctor)
+                    userPreferences.setDoctorLoggedIn(true) // Set doctor login state
                     _loginState.value = LoginState.DoctorSuccess
                 } else {
                     _loginState.value = LoginState.Error("Invalid credentials")
@@ -48,7 +55,10 @@ class LoginViewModel @Inject constructor(
     fun register(user: User) {
         viewModelScope.launch {
             try {
-                val userId = repository.insertUser(user) // Insert user and get the new ID
+                val hashedPassword = hashPassword(user.passwordHash)
+                val hashedDoctorPassword = user.doctorPasswordHash?.let { hashPassword(it) }
+                val newUser = user.copy(passwordHash = hashedPassword, doctorPasswordHash = hashedDoctorPassword)
+                val userId = repository.insertUser(newUser) // Insert user and get the new ID
                 userPreferences.saveUserId(userId.toInt()) // Save the new user ID
                 _loginState.value = LoginState.Success
             } catch (e: Exception) {
@@ -57,9 +67,16 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-
     fun resetState() {
         _loginState.value = LoginState.Idle
+    }
+
+    private fun hashPassword(password: String): String {
+        // Implement your password hashing logic here
+        // For example, using SHA-256
+        val digest = MessageDigest.getInstance("SHA-256")
+        val hashBytes = digest.digest(password.toByteArray(StandardCharsets.UTF_8))
+        return hashBytes.joinToString("") { "%02x".format(it) }
     }
 }
 

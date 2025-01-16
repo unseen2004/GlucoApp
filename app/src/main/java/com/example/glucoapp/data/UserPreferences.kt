@@ -3,6 +3,7 @@ package com.example.glucoapp.data
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -20,6 +21,7 @@ class UserPreferences(private val context: Context) {
         val THEME_KEY = stringPreferencesKey("theme")
         val LANGUAGE_KEY = stringPreferencesKey("language")
         val USER_ID_KEY = intPreferencesKey("user_id") // To store the logged-in user's ID
+        val IS_DOCTOR_LOGGED_IN = booleanPreferencesKey("is_doctor_logged_in")
     }
 
     // Save theme preference
@@ -60,6 +62,11 @@ class UserPreferences(private val context: Context) {
         .map { preferences ->
             preferences[PreferencesKeys.USER_ID_KEY]
         }
+    suspend fun setDoctorLoggedIn(isDoctor: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.IS_DOCTOR_LOGGED_IN] = isDoctor
+        }
+    }
 
     // Function to clear all preferences (for logout or clearing data)
     suspend fun clearPreferences() {
