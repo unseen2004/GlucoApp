@@ -31,17 +31,20 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.glucoapp.data.db.models.InsulinType
 import com.example.glucoapp.data.db.models.PredefinedMeal
+import com.example.glucoapp.navigation.Screen
 import com.example.glucoapp.presentation.viewmodels.SettingsUiState
 import com.example.glucoapp.presentation.viewmodels.SettingsViewModel
+import com.example.glucoapp.ui.viewmodels.MainViewModel
 
 @Composable
 fun SettingsScreen(
     navController: NavController,
-    viewModel: SettingsViewModel = hiltViewModel()
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val insulinTypes by viewModel.insulinTypes.collectAsState()
-    val predefinedMeals by viewModel.predefinedMeals.collectAsState()
+    val uiState by settingsViewModel.uiState.collectAsState()
+    val insulinTypes by settingsViewModel.insulinTypes.collectAsState()
+    val predefinedMeals by settingsViewModel.predefinedMeals.collectAsState()
 
     var showAddInsulinTypeDialog by remember { mutableStateOf(false) }
     var showAddPredefinedMealDialog by remember { mutableStateOf(false) }
@@ -50,7 +53,7 @@ fun SettingsScreen(
     var currentUserId by remember { mutableStateOf(1) } // TODO: Get actual user ID
 
     LaunchedEffect(Unit) {
-        viewModel.loadCurrentUser()
+        settingsViewModel.loadCurrentUser()
     }
 
     Column(
@@ -98,16 +101,28 @@ fun SettingsScreen(
             Text("Change Doctor Password")
         }
 
+        Button(
+            onClick = {
+                mainViewModel.logout()
+                navController.navigate(Screen.Login.route) {
+                    popUpTo(Screen.Main.route) { inclusive = true }
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Logout")
+        }
+
         if (showAddInsulinTypeDialog) {
             AddInsulinTypeDialog(
                 onDismiss = { showAddInsulinTypeDialog = false },
                 onSave = { newInsulinType ->
-                    viewModel.insertInsulinType(newInsulinType)
+                    settingsViewModel.insertInsulinType(newInsulinType)
                     showAddInsulinTypeDialog = false
                 },
                 insulinTypes = insulinTypes,
                 onDelete = { insulinType ->
-                    viewModel.deleteInsulinType(insulinType)
+                    settingsViewModel.deleteInsulinType(insulinType)
                 }
             )
         }
@@ -116,12 +131,12 @@ fun SettingsScreen(
             AddPredefinedMealDialog(
                 onDismiss = { showAddPredefinedMealDialog = false },
                 onSave = { newPredefinedMeal ->
-                    viewModel.insertPredefinedMeal(newPredefinedMeal)
+                    settingsViewModel.insertPredefinedMeal(newPredefinedMeal)
                     showAddPredefinedMealDialog = false
                 },
                 predefinedMeals = predefinedMeals,
                 onDelete = { predefinedMeal ->
-                    viewModel.deletePredefinedMeal(predefinedMeal)
+                    settingsViewModel.deletePredefinedMeal(predefinedMeal)
                 }
             )
         }
@@ -130,7 +145,7 @@ fun SettingsScreen(
             ChangePasswordDialog(
                 onDismiss = { showChangePasswordDialog = false },
                 onSave = { newPassword ->
-                    viewModel.updatePassword(currentUserId, newPassword)
+                    settingsViewModel.updatePassword(currentUserId, newPassword)
                     showChangePasswordDialog = false
                 }
             )
@@ -140,7 +155,7 @@ fun SettingsScreen(
             ChangeDoctorPasswordDialog(
                 onDismiss = { showChangeDoctorPasswordDialog = false },
                 onSave = { newPassword ->
-                    viewModel.updateDoctorPassword(currentUserId, newPassword)
+                    settingsViewModel.updateDoctorPassword(currentUserId, newPassword)
                     showChangeDoctorPasswordDialog = false
                 }
             )

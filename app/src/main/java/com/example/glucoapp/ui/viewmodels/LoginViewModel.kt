@@ -10,32 +10,54 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.example.glucoapp.data.UserPreferences
+import kotlinx.coroutines.flow.asStateFlow
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(private val repository: AppRepository) : ViewModel() {
-    private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
-    val loginState: StateFlow<LoginState> = _loginState
+class LoginViewModel @Inject constructor(
+    private val repository: AppRepository,
+    private val userPreferences: UserPreferences
+) : ViewModel() {
 
-    fun login(user: User) {
-        // Basic implementation - accepts any login
+    private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
+    val loginState: StateFlow<LoginState> = _loginState.asStateFlow()
+
+    fun login(username: String, password: String) {
+        _loginState.value = LoginState.Loading
+
         viewModelScope.launch {
-            val existingUser = repository.getUserByUsername(user.username).firstOrNull()
-            if (existingUser != null) {
-                _loginState.value = LoginState.Success
+            val user = repository.getUserByUsername(username).firstOrNull()
+            if (user != null) {
+                if (user.passwordHash == password) {
+                    // Normal user login
+                    userPreferences.saveUserId(user.userId) // Save logged-in user ID
+                    _loginState.value = LoginState.Success
+                } else if (user.doctorPasswordHash == password) {
+                    // Doctor login
+                    userPreferences.saveUserId(user.userId) // Save logged-in user ID (doctor)
+                    _loginState.value = LoginState.DoctorSuccess
+                } else {
+                    _loginState.value = LoginState.Error("Invalid credentials")
+                }
             } else {
-                // Handle login failure if needed
                 _loginState.value = LoginState.Error("Invalid credentials")
             }
         }
     }
 
     fun register(user: User) {
-        // Basic implementation - always succeeds
         viewModelScope.launch {
-            repository.insertUser(user)
-            _loginState.value = LoginState.Success
+            try {
+                val userId = repository.insertUser(user) // Insert user and get the new ID
+                userPreferences.saveUserId(userId.toInt()) // Save the new user ID
+                _loginState.value = LoginState.Success
+            } catch (e: Exception) {
+                _loginState.value = LoginState.Error("Registration failed: ${e.message}")
+            }
         }
     }
+
+
     fun resetState() {
         _loginState.value = LoginState.Idle
     }
@@ -45,5 +67,6 @@ sealed class LoginState {
     object Idle : LoginState()
     object Loading : LoginState()
     object Success : LoginState()
+    object DoctorSuccess : LoginState()
     data class Error(val message: String) : LoginState()
 }
