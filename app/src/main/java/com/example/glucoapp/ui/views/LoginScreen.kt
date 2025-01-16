@@ -26,6 +26,8 @@ import com.example.glucoapp.data.db.models.User
 import com.example.glucoapp.navigation.Screen
 import com.example.glucoapp.ui.viewmodels.LoginState
 import com.example.glucoapp.ui.viewmodels.LoginViewModel
+import androidx.compose.material3.CircularProgressIndicator
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,10 +40,18 @@ fun LoginScreen(
     val loginState by viewModel.loginState.collectAsState()
 
     LaunchedEffect(loginState) {
-        if (loginState is LoginState.Success) {
-            navController.navigate(Screen.Main.route) {
-                popUpTo(Screen.Login.route) { inclusive = true }
+        when (loginState) {
+            is LoginState.Success -> {
+                navController.navigate(Screen.Main.route) {
+                    popUpTo(Screen.Login.route) { inclusive = true }
+                }
             }
+            is LoginState.DoctorSuccess -> {
+                navController.navigate(Screen.Main.route) {
+                    popUpTo(Screen.Login.route) { inclusive = true }
+                }
+            }
+            else -> {}
         }
     }
 
@@ -51,42 +61,47 @@ fun LoginScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
-            label = { Text("Username") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = {
-                viewModel.login(User(username = username, passwordHash = password, doctorPasswordHash = null)) // Pass null for doctorPasswordHash
-                viewModel.resetState()
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Login")
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(
-            onClick = {
-                viewModel.register(User(username = username, passwordHash = password, doctorPasswordHash = null)) // Pass null for doctorPasswordHash
-                viewModel.resetState()
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Create Account")
-        }
+        when (loginState) {
+            is LoginState.Loading -> {
+                CircularProgressIndicator()
+            }
+            else -> {
+                OutlinedTextField(
+                    value = username,
+                    onValueChange = { username = it },
+                    label = { Text("Username") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Password") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = {
+                        viewModel.login(username, password)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Login")
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = {
+                        viewModel.register(User(username = username, passwordHash = password, doctorPasswordHash = null))
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Create Account")
+                }
 
-        if (loginState is LoginState.Error) {
-            Text("Error: ${(loginState as LoginState.Error).message}")
+                if (loginState is LoginState.Error) {
+                    Text("Error: ${(loginState as LoginState.Error).message}")
+                }
+            }
         }
     }
 }
