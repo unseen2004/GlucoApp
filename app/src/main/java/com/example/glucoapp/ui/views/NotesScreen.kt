@@ -90,12 +90,29 @@ fun NoteItem(note: Note, onDeleteClick: () -> Unit) {
                 Spacer(modifier = Modifier.padding(2.dp))
             }
             if (note.mealId != null) {
-                Text(text = "Meal ID: ${note.mealId}")
+                //Text(text = "Meal ID: ${note.mealId}")
+                Text(text = "Meal added")
                 Spacer(modifier = Modifier.padding(2.dp))
             }
             if (note.activityId != null) {
-                Text(text = "Activity ID: ${note.activityId}")
+                //Text(text = "Activity ID: ${note.activityId}")
+                Text(text = "Activity added")
+                Spacer(modifier = Modifier.padding(2.dp))
             }
+
+            // Display additional details for activity, meal, and predefined meal
+//            note.activityId?.let {
+//                Text(text = "Activity Details: ${note.activityId}")
+//                Spacer(modifier = Modifier.padding(2.dp))
+//            }
+//            note.mealId?.let {
+//                Text(text = "Meal Details: ${note.mealId}")
+//                Spacer(modifier = Modifier.padding(2.dp))
+//            }
+//            note.insulinTypeId?.let {
+//                Text(text = "Predefined Meal Details: ${note.insulinTypeId}")
+//                Spacer(modifier = Modifier.padding(2.dp))
+//            }
 
             Box(
                 modifier = Modifier.fillMaxWidth(),
