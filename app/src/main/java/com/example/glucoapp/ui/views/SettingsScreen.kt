@@ -59,6 +59,14 @@ fun SettingsScreen(
         Button(onClick = { showDeleteActivityDialog = true }) {
             Text("Delete Activity")
         }
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(onClick = {
+            navController.navigate("login") {
+                popUpTo("settings") { inclusive = true }
+            }
+        }) {
+            Text("Logout")
+        }
     }
 
     if (showAddInsulinDialog) {

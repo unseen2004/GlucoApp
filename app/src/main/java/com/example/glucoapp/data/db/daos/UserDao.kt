@@ -47,7 +47,8 @@ interface UserDao {
 
     @Query("UPDATE Users SET doctorPasswordHash = :newDoctorPasswordHash WHERE userId = :userId")
     suspend fun updateDoctorPassword(userId: Int, newDoctorPasswordHash: String)
-
+    @Query("DELETE FROM Users WHERE userId = :userId")
+    suspend fun clearCurrentUser(userId: Int)
     @Transaction
     suspend fun deleteUserAndRelatedData(userId: Int) {
         deleteUserById(userId)

@@ -68,4 +68,13 @@ class AppRepositoryImpl @Inject constructor(
     override suspend fun deleteIngredient(ingredient: Ingredient) = ingredientDao.delete(ingredient)
     override fun getAllIngredients(): Flow<List<Ingredient>> = ingredientDao.getAllIngredients()
     override fun getIngredientById(ingredientId: Int): Flow<Ingredient?> = ingredientDao.getIngredientById(ingredientId)
+    private fun getCurrentUserId(): Int {
+        // Replace with actual logic to get the current user ID
+        return 1 // Example user ID
+    }
+    override suspend fun logoutUser() {
+        // Assuming you have a way to get the current user ID
+        val currentUserId = getCurrentUserId()
+        userDao.clearCurrentUser(currentUserId)
+    }
 }

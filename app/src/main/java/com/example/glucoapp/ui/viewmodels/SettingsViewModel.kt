@@ -165,4 +165,10 @@ class SettingsViewModel @Inject constructor(private val repository: AppRepositor
             }
         }
     }
+
+    fun logout() {
+        viewModelScope.launch {
+            repository.logoutUser()
+        }
+    }
 }
