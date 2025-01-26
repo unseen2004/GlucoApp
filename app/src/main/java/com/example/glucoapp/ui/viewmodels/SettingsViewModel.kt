@@ -6,6 +6,7 @@ import com.example.glucoapp.data.repository.AppRepository
 import com.example.glucoapp.data.db.models.User
 import com.example.glucoapp.data.db.models.Ingredient
 import com.example.glucoapp.data.db.models.InsulinType
+import com.example.glucoapp.data.db.models.Activity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -34,9 +35,13 @@ class SettingsViewModel @Inject constructor(private val repository: AppRepositor
     private val _ingredients = MutableStateFlow<List<Ingredient>>(emptyList())
     val ingredients: StateFlow<List<Ingredient>> = _ingredients.asStateFlow()
 
+    private val _activities = MutableStateFlow<List<Activity>>(emptyList())
+    val activities: StateFlow<List<Activity>> = _activities.asStateFlow()
+
     init {
         loadInsulinTypes()
         loadIngredients()
+        loadActivities()
     }
 
     fun loadCurrentUser() {
@@ -123,6 +128,20 @@ class SettingsViewModel @Inject constructor(private val repository: AppRepositor
         }
     }
 
+    fun addActivity(activity: Activity) {
+        viewModelScope.launch {
+            repository.insertActivity(activity)
+            loadActivities()
+        }
+    }
+
+    fun deleteActivity(activity: Activity) {
+        viewModelScope.launch {
+            repository.deleteActivity(activity)
+            loadActivities()
+        }
+    }
+
     private fun loadInsulinTypes() {
         viewModelScope.launch {
             repository.getAllInsulinTypes().collect { insulinTypes ->
@@ -135,6 +154,14 @@ class SettingsViewModel @Inject constructor(private val repository: AppRepositor
         viewModelScope.launch {
             repository.getAllIngredients().collect { ingredients ->
                 _ingredients.value = ingredients
+            }
+        }
+    }
+
+    private fun loadActivities() {
+        viewModelScope.launch {
+            repository.getActivitiesByUserId(1).collect { activities ->
+                _activities.value = activities
             }
         }
     }
