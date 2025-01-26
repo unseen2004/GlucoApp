@@ -27,9 +27,6 @@ interface IngredientDao {
     @Query("SELECT * FROM Ingredients WHERE ingredientId = :ingredientId")
     fun getIngredientById(ingredientId: Int): Flow<Ingredient>
 
-    @Query("SELECT * FROM Ingredients WHERE mealId = :mealId")
-    fun getIngredientsByMealId(mealId: Int): Flow<List<Ingredient>>
-
     @Transaction
     suspend fun insertAndUpdateIngredient(ingredient: Ingredient) {
         insert(ingredient)

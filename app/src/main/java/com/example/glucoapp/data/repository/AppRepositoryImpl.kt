@@ -68,5 +68,4 @@ class AppRepositoryImpl @Inject constructor(
     override suspend fun deleteIngredient(ingredient: Ingredient) = ingredientDao.delete(ingredient)
     override fun getAllIngredients(): Flow<List<Ingredient>> = ingredientDao.getAllIngredients()
     override fun getIngredientById(ingredientId: Int): Flow<Ingredient?> = ingredientDao.getIngredientById(ingredientId)
-    override fun getIngredientsByMealId(mealId: Int): Flow<List<Ingredient>> = ingredientDao.getIngredientsByMealId(mealId)
 }

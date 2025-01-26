@@ -8,9 +8,8 @@ import androidx.room.PrimaryKey
 data class Ingredient(
     @PrimaryKey(autoGenerate = true) val ingredientId: Int = 0,
     @ColumnInfo(name = "foodName") val foodName: String,
-    @ColumnInfo(name = "protein") val protein: Double,
-    @ColumnInfo(name = "carbs") val carbs: Double,
-    @ColumnInfo(name = "fat") val fat: Double,
-    @ColumnInfo(name = "kcal") val kcal: Double,
-    @ColumnInfo(name = "mealId") val mealId: Int
+    @ColumnInfo(name = "protein") val protein: Float,
+    @ColumnInfo(name = "carbs") val carbs: Float,
+    @ColumnInfo(name = "fat") val fat: Float,
+    @ColumnInfo(name = "kcal") val kcal: Float,
 )

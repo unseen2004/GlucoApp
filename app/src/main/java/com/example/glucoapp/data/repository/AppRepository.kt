@@ -47,5 +47,4 @@ interface AppRepository {
     suspend fun deleteIngredient(ingredient: Ingredient)
     fun getAllIngredients(): Flow<List<Ingredient>>
     fun getIngredientById(ingredientId: Int): Flow<Ingredient?>
-    fun getIngredientsByMealId(mealId: Int): Flow<List<Ingredient>>
 }

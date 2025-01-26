@@ -4,16 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.glucoapp.data.repository.AppRepository
 import com.example.glucoapp.data.db.models.User
+import com.example.glucoapp.data.db.models.Ingredient
+import com.example.glucoapp.data.db.models.InsulinType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import javax.inject.Inject
-import com.example.glucoapp.data.db.models.Ingredient
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
+import javax.inject.Inject
 
 sealed class SettingsUiState {
     object Loading : SettingsUiState()
@@ -27,8 +28,16 @@ class SettingsViewModel @Inject constructor(private val repository: AppRepositor
     private val _uiState = MutableStateFlow<SettingsUiState>(SettingsUiState.Loading)
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
-    private val _predefinedMeals = MutableStateFlow<List<Ingredient>>(emptyList())
-    val predefinedMeals: StateFlow<List<Ingredient>> = _predefinedMeals.asStateFlow()
+    private val _insulinTypes = MutableStateFlow<List<InsulinType>>(emptyList())
+    val insulinTypes: StateFlow<List<InsulinType>> = _insulinTypes.asStateFlow()
+
+    private val _ingredients = MutableStateFlow<List<Ingredient>>(emptyList())
+    val ingredients: StateFlow<List<Ingredient>> = _ingredients.asStateFlow()
+
+    init {
+        loadInsulinTypes()
+        loadIngredients()
+    }
 
     fun loadCurrentUser() {
         viewModelScope.launch {
@@ -53,7 +62,6 @@ class SettingsViewModel @Inject constructor(private val repository: AppRepositor
             _uiState.value = SettingsUiState.Success(user)
         }
     }
-
 
     fun changePassword(newPassword: String) {
         viewModelScope.launch {
@@ -85,5 +93,49 @@ class SettingsViewModel @Inject constructor(private val repository: AppRepositor
         val digest = MessageDigest.getInstance("SHA-256")
         val hashBytes = digest.digest(password.toByteArray(StandardCharsets.UTF_8))
         return hashBytes.joinToString("") { "%02x".format(it) }
+    }
+
+    fun addInsulinType(insulinType: InsulinType) {
+        viewModelScope.launch {
+            repository.insertInsulinType(insulinType)
+            loadInsulinTypes()
+        }
+    }
+
+    fun deleteInsulinType(insulinType: InsulinType) {
+        viewModelScope.launch {
+            repository.deleteInsulinType(insulinType)
+            loadInsulinTypes()
+        }
+    }
+
+    fun addIngredient(ingredient: Ingredient) {
+        viewModelScope.launch {
+            repository.insertIngredient(ingredient)
+            loadIngredients()
+        }
+    }
+
+    fun deleteIngredient(ingredient: Ingredient) {
+        viewModelScope.launch {
+            repository.deleteIngredient(ingredient)
+            loadIngredients()
+        }
+    }
+
+    private fun loadInsulinTypes() {
+        viewModelScope.launch {
+            repository.getAllInsulinTypes().collect { insulinTypes ->
+                _insulinTypes.value = insulinTypes
+            }
+        }
+    }
+
+    private fun loadIngredients() {
+        viewModelScope.launch {
+            repository.getAllIngredients().collect { ingredients ->
+                _ingredients.value = ingredients
+            }
+        }
     }
 }
