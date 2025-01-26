@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.glucoapp.data.db.models.Meal
 import com.example.glucoapp.data.db.models.User
+import com.example.glucoapp.data.db.models.Ingredient
 import com.example.glucoapp.data.repository.AppRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -20,6 +21,9 @@ class MealsViewModel @Inject constructor(private val repository: AppRepository) 
 
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> = _user
+
+    private val _ingredients = MutableStateFlow<List<Ingredient>>(emptyList())
+    val ingredients: StateFlow<List<Ingredient>> = _ingredients.asStateFlow()
 
     fun loadUserById(userId: Int) {
         viewModelScope.launch {
@@ -55,6 +59,14 @@ class MealsViewModel @Inject constructor(private val repository: AppRepository) 
         viewModelScope.launch {
             repository.updateMeal(meal)
             _user.value?.userId?.let { loadMealsByUserId(it) }
+        }
+    }
+
+    fun loadIngredients() {
+        viewModelScope.launch {
+            repository.getAllIngredients().collect { ingredients ->
+                _ingredients.value = ingredients
+            }
         }
     }
 }

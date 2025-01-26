@@ -1,6 +1,8 @@
 package com.example.glucoapp.ui.views
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -12,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.glucoapp.data.db.models.Meal
+import com.example.glucoapp.data.db.models.Ingredient
 import com.example.glucoapp.navigation.Screen
 import com.example.glucoapp.ui.viewmodels.MealsViewModel
 
@@ -27,6 +30,13 @@ fun AddMealScreen(
     var fat by remember { mutableStateOf("") }
     var kcal by remember { mutableStateOf("") }
     var userId by remember { mutableStateOf(1) } // Replace with actual user ID
+    var showIngredientDialog by remember { mutableStateOf(false) }
+    val ingredients by viewModel.ingredients.collectAsState(initial = emptyList())
+
+    // Load ingredients when the screen is first shown
+    LaunchedEffect(Unit) {
+        viewModel.loadIngredients()
+    }
 
     Scaffold(
         topBar = {
@@ -107,6 +117,81 @@ fun AddMealScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
+
+            Button(
+                onClick = { showIngredientDialog = true },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Add Ingredients")
+            }
         }
     }
+
+    if (showIngredientDialog) {
+        IngredientSelectionDialog(
+            ingredients = ingredients,
+            onDismiss = { showIngredientDialog = false },
+            onIngredientsSelected = { selectedIngredients ->
+                val totalProtein = selectedIngredients.sumOf { it.protein.toDouble() }
+                val totalCarbs = selectedIngredients.sumOf { it.carbs.toDouble() }
+                val totalFat = selectedIngredients.sumOf { it.fat.toDouble() }
+                val totalKcal = selectedIngredients.sumOf { it.kcal.toDouble() }
+
+                protein = totalProtein.toString()
+                carbs = totalCarbs.toString()
+                fat = totalFat.toString()
+                kcal = totalKcal.toString()
+
+                showIngredientDialog = false
+            }
+        )
+    }
+}
+
+@Composable
+fun IngredientSelectionDialog(
+    ingredients: List<Ingredient>,
+    onDismiss: () -> Unit,
+    onIngredientsSelected: (List<Ingredient>) -> Unit
+) {
+    var selectedIngredients by remember { mutableStateOf(emptyList<Ingredient>()) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Select Ingredients") },
+        text = {
+            LazyColumn {
+                items(ingredients) { ingredient ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(ingredient.foodName)
+                        Checkbox(
+                            checked = selectedIngredients.contains(ingredient),
+                            onCheckedChange = {
+                                if (it) {
+                                    selectedIngredients = selectedIngredients + ingredient
+                                } else {
+                                    selectedIngredients = selectedIngredients - ingredient
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(onClick = { onIngredientsSelected(selectedIngredients) }) {
+                Text("Add")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }
