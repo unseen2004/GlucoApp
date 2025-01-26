@@ -42,6 +42,7 @@ class NoteViewModel @Inject constructor(private val repository: AppRepository) :
 
     init {
         loadInsulinTypes()
+        loadActivities()
     }
 
     fun loadInsulinTypes() {
@@ -97,6 +98,13 @@ class NoteViewModel @Inject constructor(private val repository: AppRepository) :
         }
     }
 
+    fun loadActivities() {
+        viewModelScope.launch {
+            repository.getActivitiesByUserId(1).collect { activities ->
+                _activities.value = activities
+            }
+        }
+    }
 
     fun insertActivity(activity: Activity, callback: (Int) -> Unit) {
         viewModelScope.launch {

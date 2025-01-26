@@ -55,13 +55,19 @@ fun AddNoteScreen(
     var insulinTypeExpanded by remember { mutableStateOf(false) }
     var showMealSelectionDialog by remember { mutableStateOf(false) }
     var selectedMeal by remember { mutableStateOf<Meal?>(null) }
+    var selectedActivity by remember { mutableStateOf<Activity?>(null) }
+    var activityExpanded by remember { mutableStateOf(false) }
 
     val insulinTypes by viewModel.insulinTypes.collectAsState()
     val meals by viewModel.meals.collectAsState()
+    val activities by viewModel.activities.collectAsState()
 
     LaunchedEffect(Unit) {
         if (insulinTypes.isEmpty()) {
             viewModel.loadInsulinTypes()
+        }
+        if (activities.isEmpty()) {
+            viewModel.loadActivities()
         }
     }
 
@@ -93,7 +99,7 @@ fun AddNoteScreen(
                             InsulinAmount = insulinAmount.toDoubleOrNull(),
                             WW = WW.toDoubleOrNull(),
                             WBT = WBT.toDoubleOrNull(),
-                            activityId = null
+                            activityId = selectedActivity?.activityId
                         )
                         viewModel.insertNote(newNote)
                         navController.navigate(Screen.Main.route)
@@ -198,6 +204,41 @@ fun AddNoteScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Add Meal")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ExposedDropdownMenuBox(
+                expanded = activityExpanded,
+                onExpandedChange = { activityExpanded = !activityExpanded },
+            ) {
+                OutlinedTextField(
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth(),
+                    readOnly = true,
+                    value = selectedActivity?.activityType ?: "",
+                    onValueChange = {},
+                    label = { Text("Activity") },
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(
+                            expanded = activityExpanded
+                        )
+                    },
+                )
+                ExposedDropdownMenu(
+                    expanded = activityExpanded,
+                    onDismissRequest = { activityExpanded = false },
+                ) {
+                    activities.forEach { activity ->
+                        DropdownMenuItem(
+                            onClick = {
+                                selectedActivity = activity
+                                activityExpanded = false
+                            },
+                            text = { Text(activity.activityType) }
+                        )
+                    }
+                }
             }
         }
     }
