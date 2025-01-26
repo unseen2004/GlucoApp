@@ -12,14 +12,17 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ActivityDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(activity: Activity): Long // Return Long (the new ID)
-
-    @Update
-    suspend fun update(activity: Activity)
+    suspend fun insert(activity: Activity): Long
 
     @Delete
     suspend fun delete(activity: Activity)
 
-    @Query("SELECT * FROM Activities WHERE userId = :userId ORDER BY timestamp DESC")
+    @Update
+    suspend fun update(activity: Activity)
+
+    @Query("SELECT * FROM Activities WHERE userId = :userId")
     fun getActivitiesByUserId(userId: Int): Flow<List<Activity>>
+
+    @Query("SELECT * FROM Activities WHERE activityId = :activityId")
+    fun getActivityById(activityId: Int): Flow<Activity?>
 }

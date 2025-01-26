@@ -1,4 +1,4 @@
-package com.example.glucoapp.presentation.viewmodels
+package com.example.glucoapp.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,9 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.example.glucoapp.data.db.models.InsulinType
-import com.example.glucoapp.data.db.models.PredefinedMeal
-import kotlinx.coroutines.flow.collect
+import com.example.glucoapp.data.db.models.Ingredient
 import kotlinx.coroutines.flow.firstOrNull
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
@@ -29,16 +27,8 @@ class SettingsViewModel @Inject constructor(private val repository: AppRepositor
     private val _uiState = MutableStateFlow<SettingsUiState>(SettingsUiState.Loading)
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
-    private val _insulinTypes = MutableStateFlow<List<InsulinType>>(emptyList())
-    val insulinTypes: StateFlow<List<InsulinType>> = _insulinTypes.asStateFlow()
-
-    private val _predefinedMeals = MutableStateFlow<List<PredefinedMeal>>(emptyList())
-    val predefinedMeals: StateFlow<List<PredefinedMeal>> = _predefinedMeals.asStateFlow()
-
-    init {
-        loadInsulinTypes()
-        loadPredefinedMeals()
-    }
+    private val _predefinedMeals = MutableStateFlow<List<Ingredient>>(emptyList())
+    val predefinedMeals: StateFlow<List<Ingredient>> = _predefinedMeals.asStateFlow()
 
     fun loadCurrentUser() {
         viewModelScope.launch {
@@ -64,82 +54,33 @@ class SettingsViewModel @Inject constructor(private val repository: AppRepositor
         }
     }
 
-    private fun loadInsulinTypes() {
-        viewModelScope.launch {
-            repository.getAllInsulinTypes().collect { types ->
-                _insulinTypes.value = types
-            }
-        }
-    }
 
-    private fun loadPredefinedMeals() {
+    fun changePassword(newPassword: String) {
         viewModelScope.launch {
-            repository.getAllPredefinedMeals().collect { meals ->
-                _predefinedMeals.value = meals
-            }
-        }
-    }
-
-    fun insertInsulinType(insulinType: InsulinType) {
-        viewModelScope.launch {
-            repository.insertInsulinType(insulinType)
-            loadInsulinTypes() // Reload the list after insertion
-        }
-    }
-
-    fun deleteInsulinType(insulinType: InsulinType) {
-        viewModelScope.launch {
-            repository.deleteInsulinType(insulinType)
-            loadInsulinTypes() // Reload the list after deletion
-        }
-    }
-
-    fun insertPredefinedMeal(meal: PredefinedMeal) {
-        viewModelScope.launch {
-            repository.insertPredefinedMeal(meal)
-            loadPredefinedMeals() // Reload the list after insertion
-        }
-    }
-
-    fun deletePredefinedMeal(meal: PredefinedMeal) {
-        viewModelScope.launch {
-            repository.deletePredefinedMeal(meal)
-            loadPredefinedMeals() // Reload the list after deletion
-        }
-    }
-    fun updateLogin(userId: Int, newUsername: String) {
-        viewModelScope.launch {
-            val user = repository.getUserById(userId).firstOrNull()
+            val currentUserId = 1 // TODO: Replace with actual logic to get the current user ID
+            val user = repository.getUserById(currentUserId).firstOrNull()
             user?.let {
-                val updatedUser = it.copy(username = newUsername)
-                repository.updateUser(updatedUser)
-                _uiState.value = SettingsUiState.Success(updatedUser)
-            }
-        }
-    }
-    fun updatePassword(userId: Int, newPassword: String) {
-        viewModelScope.launch {
-            val user = repository.getUserById(userId).firstOrNull()
-            user?.let {
-                val hashedNewPassword = hashPassword(newPassword) // Hash the new password
-                val updatedUser = it.copy(passwordHash = hashedNewPassword)
+                val hashedPassword = hashPassword(newPassword)
+                val updatedUser = it.copy(passwordHash = hashedPassword)
                 repository.updateUser(updatedUser)
                 _uiState.value = SettingsUiState.Success(updatedUser)
             }
         }
     }
 
-    fun updateDoctorPassword(userId: Int, newDoctorPassword: String) {
+    fun changeDoctorPassword(newPassword: String) {
         viewModelScope.launch {
-            val user = repository.getUserById(userId).firstOrNull()
+            val currentUserId = 1 // TODO: Replace with actual logic to get the current user ID
+            val user = repository.getUserById(currentUserId).firstOrNull()
             user?.let {
-                val hashedNewDoctorPassword = hashPassword(newDoctorPassword) // Hash the new doctor password
-                val updatedUser = it.copy(doctorPasswordHash = hashedNewDoctorPassword)
+                val hashedPassword = hashPassword(newPassword)
+                val updatedUser = it.copy(doctorPasswordHash = hashedPassword)
                 repository.updateUser(updatedUser)
                 _uiState.value = SettingsUiState.Success(updatedUser)
             }
         }
     }
+
     private fun hashPassword(password: String): String {
         val digest = MessageDigest.getInstance("SHA-256")
         val hashBytes = digest.digest(password.toByteArray(StandardCharsets.UTF_8))

@@ -85,12 +85,16 @@ fun NoteItem(note: Note, onDeleteClick: () -> Unit) {
             )
             Spacer(modifier = Modifier.padding(2.dp))
 
-            if (note.sugar != null) {
-                Text(text = "Sugar: ${note.sugar} g")
+            if (note.InsulinAmount != null) {
+                Text(text = "Insulin Amount: ${note.InsulinAmount} units")
                 Spacer(modifier = Modifier.padding(2.dp))
             }
-            if (note.carboExch != null) {
-                Text(text = "Carbo Exch: ${note.carboExch}")
+            if (note.WW != null) {
+                Text(text = "WW: ${note.WW}")
+                Spacer(modifier = Modifier.padding(2.dp))
+            }
+            if (note.WBT != null) {
+                Text(text = "WBT: ${note.WBT}")
                 Spacer(modifier = Modifier.padding(2.dp))
             }
             if (note.mealId != null) {

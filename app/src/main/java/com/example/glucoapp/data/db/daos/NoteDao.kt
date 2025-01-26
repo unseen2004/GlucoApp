@@ -8,6 +8,8 @@ import androidx.room.Update
 import androidx.room.OnConflictStrategy
 import com.example.glucoapp.data.db.models.Note
 import kotlinx.coroutines.flow.Flow
+import androidx.room.Transaction
+
 
 @Dao
 interface NoteDao {
@@ -23,5 +25,9 @@ interface NoteDao {
     @Query("SELECT * FROM Notes WHERE userId = :userId ORDER BY timestamp DESC")
     fun getNotesByUserId(userId: Int): Flow<List<Note>>
 
-    // Add more queries as needed for filtering and sorting
+    @Transaction
+    suspend fun insertAndUpdateNote(note: Note) {
+        insert(note)
+        update(note)
+    }
 }

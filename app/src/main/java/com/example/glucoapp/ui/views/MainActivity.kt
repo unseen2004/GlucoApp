@@ -14,7 +14,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.glucoapp.navigation.Screen
-import com.example.glucoapp.presentation.views.SettingsScreen
 import com.example.glucoapp.ui.theme.GlucoAppTheme
 import com.example.glucoapp.ui.viewmodels.LoginState
 import com.example.glucoapp.ui.viewmodels.LoginViewModel
@@ -48,6 +47,7 @@ fun AppNavigation() {
         composable(Screen.Notes.route) { NotesScreen(navController) }
         composable(Screen.Meals.route) { MealsScreen(navController) }
         composable(Screen.Settings.route) { SettingsScreen(navController) }
+        composable(Screen.Register.route) { RegisterScreen(navController) } // Add RegisterScreen here
     }
 
     LaunchedEffect(loginState) {

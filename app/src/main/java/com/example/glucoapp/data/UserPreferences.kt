@@ -1,5 +1,4 @@
 package com.example.glucoapp.data
-
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -13,62 +12,75 @@ import kotlinx.coroutines.flow.map
 
 class UserPreferences(private val context: Context) {
 
-    // Create a DataStore instance
-    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_prefs")
-
     // Keys for preferences
-    object PreferencesKeys {
+    private object PreferencesKeys {
         val THEME_KEY = stringPreferencesKey("theme")
         val LANGUAGE_KEY = stringPreferencesKey("language")
-        val USER_ID_KEY = intPreferencesKey("user_id") // To store the logged-in user's ID
+        val USER_ID_KEY = intPreferencesKey("user_id")
         val IS_DOCTOR_LOGGED_IN = booleanPreferencesKey("is_doctor_logged_in")
     }
 
-    // Save theme preference
+    // DataStore instance (initialize once)
+    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_preferences")
+
+    // User ID operations
+    val userId: Flow<Int?> = context.dataStore.data.map { preferences ->
+        preferences[PreferencesKeys.USER_ID_KEY]
+    }
+
+//    suspend fun setUserId(userId: Int) {
+//        context.dataStore.edit { preferences ->
+//            preferences[PreferencesKeys.USER_ID_KEY] = userId
+//        }
+//    }
+
+    suspend fun saveUserId(userId: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.USER_ID_KEY] = userId
+        }
+    }
+    suspend fun clearUserId() {
+        context.dataStore.edit { preferences ->
+            preferences.remove(PreferencesKeys.USER_ID_KEY)
+        }
+    }
+
+    // Doctor login status
+    val isDoctorLoggedIn: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[PreferencesKeys.IS_DOCTOR_LOGGED_IN] ?: false
+    }
+
+    suspend fun setDoctorLoggedIn(isLoggedIn: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.IS_DOCTOR_LOGGED_IN] = isLoggedIn
+        }
+    }
+
+    // Theme preferences
     suspend fun saveTheme(theme: String) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.THEME_KEY] = theme
         }
     }
 
-    // Get theme preference
     val themeFlow: Flow<String> = context.dataStore.data
         .map { preferences ->
-            preferences[PreferencesKeys.THEME_KEY] ?: "system" // Default to system theme
+            preferences[PreferencesKeys.THEME_KEY] ?: "system"
         }
 
-    // Save language preference
+    // Language preferences
     suspend fun saveLanguage(language: String) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.LANGUAGE_KEY] = language
         }
     }
 
-    // Get language preference
     val languageFlow: Flow<String> = context.dataStore.data
         .map { preferences ->
-            preferences[PreferencesKeys.LANGUAGE_KEY] ?: "en" // Default to English
+            preferences[PreferencesKeys.LANGUAGE_KEY] ?: "en"
         }
 
-    // Save logged-in user's ID
-    suspend fun saveUserId(userId: Int) {
-        context.dataStore.edit { preferences ->
-            preferences[PreferencesKeys.USER_ID_KEY] = userId
-        }
-    }
-
-    // Get logged-in user's ID
-    val userIdFlow: Flow<Int?> = context.dataStore.data
-        .map { preferences ->
-            preferences[PreferencesKeys.USER_ID_KEY]
-        }
-    suspend fun setDoctorLoggedIn(isDoctor: Boolean) {
-        context.dataStore.edit { preferences ->
-            preferences[PreferencesKeys.IS_DOCTOR_LOGGED_IN] = isDoctor
-        }
-    }
-
-    // Function to clear all preferences (for logout or clearing data)
+    // Clear all preferences
     suspend fun clearPreferences() {
         context.dataStore.edit { preferences ->
             preferences.clear()

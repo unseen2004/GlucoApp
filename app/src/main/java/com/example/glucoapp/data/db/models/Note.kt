@@ -1,9 +1,9 @@
 package com.example.glucoapp.data.db.models
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import androidx.room.ColumnInfo
 
 @Entity(
     tableName = "Notes",
@@ -38,11 +38,12 @@ data class Note(
     @PrimaryKey(autoGenerate = true) val noteId: Int = 0,
     @ColumnInfo(name = "userId") val userId: Int,
     @ColumnInfo(name = "timestamp") val timestamp: Long,
-    @ColumnInfo(name = "glucoseLevel") val glucoseLevel: Double,
+    @ColumnInfo(name = "glucoseLevel") val glucoseLevel: Int?,
+    @ColumnInfo(name = "InsulinAmount") val InsulinAmount: Double?,
     @ColumnInfo(name = "insulinTypeId") val insulinTypeId: Int?,
     @ColumnInfo(name = "noteText") val noteText: String?,
-    @ColumnInfo(name = "sugar") val sugar: Double?,
-    @ColumnInfo(name = "carboExch") val carboExch: Double?,
+    @ColumnInfo(name = "WW") val WW: Double?,
+    @ColumnInfo(name = "WBT") val WBT: Double?,
     @ColumnInfo(name = "mealId") val mealId: Int?,
     @ColumnInfo(name = "activityId") val activityId: Int?
 )

@@ -55,6 +55,12 @@ class LoginViewModel @Inject constructor(
     fun register(user: User) {
         viewModelScope.launch {
             try {
+                val existingUser = repository.getUserByUsername(user.username).firstOrNull()
+                if (existingUser != null) {
+                    _loginState.value = LoginState.Error("Username already exists")
+                    return@launch
+                }
+
                 val hashedPassword = hashPassword(user.passwordHash)
                 val hashedDoctorPassword = user.doctorPasswordHash?.let { hashPassword(it) }
                 val newUser = user.copy(passwordHash = hashedPassword, doctorPasswordHash = hashedDoctorPassword)

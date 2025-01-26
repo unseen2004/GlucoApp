@@ -1,15 +1,9 @@
 package com.example.glucoapp.di
-
 import android.content.Context
 import androidx.room.Room
 import com.example.glucoapp.data.UserPreferences
 import com.example.glucoapp.data.db.AppDatabase
-import com.example.glucoapp.data.db.daos.ActivityDao
-import com.example.glucoapp.data.db.daos.InsulinTypeDao
-import com.example.glucoapp.data.db.daos.MealDao
-import com.example.glucoapp.data.db.daos.NoteDao
-import com.example.glucoapp.data.db.daos.PredefinedMealDao
-import com.example.glucoapp.data.db.daos.UserDao
+import com.example.glucoapp.data.db.daos.*
 import com.example.glucoapp.data.repository.AppRepository
 import com.example.glucoapp.data.repository.AppRepositoryImpl
 import dagger.Module
@@ -18,7 +12,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-import com.example.glucoapp.data.db.MIGRATION_4_5
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -32,45 +25,33 @@ object AppModule {
             AppDatabase::class.java,
             "glucose_tracker_database"
         )
-            .addMigrations(MIGRATION_4_5)
+            .fallbackToDestructiveMigration()
             .build()
     }
 
     @Provides
     @Singleton
-    fun provideUserDao(db: AppDatabase): UserDao {
-        return db.userDao()
-    }
+    fun provideUserDao(db: AppDatabase): UserDao = db.userDao()
 
     @Provides
     @Singleton
-    fun provideNoteDao(db: AppDatabase): NoteDao {
-        return db.noteDao()
-    }
+    fun provideNoteDao(db: AppDatabase): NoteDao = db.noteDao()
 
     @Provides
     @Singleton
-    fun provideMealDao(db: AppDatabase): MealDao {
-        return db.mealDao()
-    }
+    fun provideMealDao(db: AppDatabase): MealDao = db.mealDao()
 
     @Provides
     @Singleton
-    fun provideActivityDao(db: AppDatabase): ActivityDao {
-        return db.activityDao()
-    }
+    fun provideActivityDao(db: AppDatabase): ActivityDao = db.activityDao()
 
     @Provides
     @Singleton
-    fun provideInsulinTypeDao(db: AppDatabase): InsulinTypeDao {
-        return db.insulinTypeDao()
-    }
+    fun provideInsulinTypeDao(db: AppDatabase): InsulinTypeDao = db.insulinTypeDao()
 
     @Provides
     @Singleton
-    fun providePredefinedMealDao(db: AppDatabase): PredefinedMealDao {
-        return db.predefinedMealDao()
-    }
+    fun provideIngredientDao(db: AppDatabase): IngredientDao = db.ingredientDao()
 
     @Provides
     @Singleton
@@ -80,7 +61,7 @@ object AppModule {
         mealDao: MealDao,
         activityDao: ActivityDao,
         insulinTypeDao: InsulinTypeDao,
-        predefinedMealDao: PredefinedMealDao
+        ingredientDao: IngredientDao
     ): AppRepository {
         return AppRepositoryImpl(
             userDao,
@@ -88,7 +69,7 @@ object AppModule {
             mealDao,
             activityDao,
             insulinTypeDao,
-            predefinedMealDao
+            ingredientDao
         )
     }
 
@@ -97,4 +78,12 @@ object AppModule {
     fun provideUserPreferences(@ApplicationContext context: Context): UserPreferences {
         return UserPreferences(context)
     }
+}sealed class Screen(val route: String) {
+    object Login : Screen("login")
+    object Notes : Screen("notes")
+    object Meals : Screen("meals")
+    object Settings : Screen("settings")
+    object AddNote : Screen("add_note")
+    object AddMeal : Screen("add_meal")
+    object Register : Screen("register")
 }

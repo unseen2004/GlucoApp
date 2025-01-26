@@ -1,21 +1,19 @@
 package com.example.glucoapp.data.repository
-
-import com.example.glucoapp.data.db.models.Activity
-import com.example.glucoapp.data.db.models.InsulinType
-import com.example.glucoapp.data.db.models.Meal
-import com.example.glucoapp.data.db.models.Note
-import com.example.glucoapp.data.db.models.PredefinedMeal
-import com.example.glucoapp.data.db.models.User
+import com.example.glucoapp.data.db.models.*
 import kotlinx.coroutines.flow.Flow
 
 interface AppRepository {
     // User operations
-    suspend fun insertUser(user: User): Long // Returns the ID of the new row
+    fun getUserById(userId: Int): Flow<User?>
+    suspend fun getUserByUsername(username: String): Flow<User?>
+    suspend fun insertUser(user: User): Long
     suspend fun updateUser(user: User)
     suspend fun deleteUser(user: User)
-    fun getUserById(userId: Int): Flow<User?>
-    fun getUserByUsername(username: String): Flow<User?>
-
+    suspend fun registerUser(user: User): Long // Added function
+    suspend fun updatePassword(userId: Int, newPasswordHash: String)
+    suspend fun updateUsername(userId: Int, newUsername: String)
+    suspend fun updateDoctorPassword(userId: Int, newDoctorPasswordHash: String)
+    suspend fun deleteUserAndRelatedData(userId: Int)
     // Note operations
     suspend fun insertNote(note: Note)
     suspend fun updateNote(note: Note)
@@ -30,21 +28,24 @@ interface AppRepository {
     fun getMealById(mealId: Int): Flow<Meal?>
 
     // Activity operations
-    suspend fun insertActivity(activity: Activity): Long // Return Long
+    suspend fun insertActivity(activity: Activity): Long
     suspend fun updateActivity(activity: Activity)
     suspend fun deleteActivity(activity: Activity)
     fun getActivitiesByUserId(userId: Int): Flow<List<Activity>>
+    fun getActivityById(activityId: Int): Flow<Activity?>
 
     // InsulinType operations
     suspend fun insertInsulinType(insulinType: InsulinType)
     suspend fun updateInsulinType(insulinType: InsulinType)
     suspend fun deleteInsulinType(insulinType: InsulinType)
     fun getAllInsulinTypes(): Flow<List<InsulinType>>
+    fun getInsulinTypeById(typeId: Int): Flow<InsulinType?>
 
-    // PredefinedMeal operations
-    suspend fun insertPredefinedMeal(predefinedMeal: PredefinedMeal)
-    suspend fun updatePredefinedMeal(predefinedMeal: PredefinedMeal)
-    suspend fun deletePredefinedMeal(predefinedMeal: PredefinedMeal)
-    fun getAllPredefinedMeals(): Flow<List<PredefinedMeal>>
-    fun getPredefinedMealById(predefinedMealId: Int): Flow<PredefinedMeal?>
+    // Ingredient operations
+    suspend fun insertIngredient(ingredient: Ingredient)
+    suspend fun updateIngredient(ingredient: Ingredient)
+    suspend fun deleteIngredient(ingredient: Ingredient)
+    fun getAllIngredients(): Flow<List<Ingredient>>
+    fun getIngredientById(ingredientId: Int): Flow<Ingredient?>
+    fun getIngredientsByMealId(mealId: Int): Flow<List<Ingredient>>
 }

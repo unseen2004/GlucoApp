@@ -8,6 +8,8 @@ import androidx.room.Update
 import androidx.room.OnConflictStrategy
 import com.example.glucoapp.data.db.models.Meal
 import kotlinx.coroutines.flow.Flow
+import androidx.room.Transaction
+
 
 @Dao
 interface MealDao {
@@ -25,4 +27,10 @@ interface MealDao {
 
     @Query("SELECT * FROM Meals WHERE mealId = :mealId")
     fun getMealById(mealId: Int): Flow<Meal>
+
+    @Transaction
+    suspend fun insertAndUpdateMeal(meal: Meal) {
+        insert(meal)
+        update(meal)
+    }
 }
