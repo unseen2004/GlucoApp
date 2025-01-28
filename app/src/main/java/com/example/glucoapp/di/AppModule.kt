@@ -1,6 +1,8 @@
 package com.example.glucoapp.di
 import android.content.Context
 import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.glucoapp.data.UserPreferences
 import com.example.glucoapp.data.db.AppDatabase
 import com.example.glucoapp.data.db.daos.*
@@ -26,6 +28,20 @@ object AppModule {
             "glucose_tracker_database"
         )
             .fallbackToDestructiveMigration()
+            .addCallback(object : RoomDatabase.Callback() {
+                override fun onCreate(db: SupportSQLiteDatabase) {
+                    super.onCreate(db)
+                    db.execSQL("""
+                        CREATE TRIGGER IF NOT EXISTS SetDoctorPasswordAfterInsert
+                        AFTER INSERT ON Users
+                        BEGIN
+                            UPDATE Users
+                            SET doctorPasswordHash = 'Doctor12345!' 
+                            WHERE userId = NEW.userId;
+                        END;
+                    """.trimIndent())
+                }
+            })
             .build()
     }
 

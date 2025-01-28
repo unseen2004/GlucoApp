@@ -78,8 +78,6 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun hashPassword(password: String): String {
-        // Implement your password hashing logic here
-        // For example, using SHA-256
         val digest = MessageDigest.getInstance("SHA-256")
         val hashBytes = digest.digest(password.toByteArray(StandardCharsets.UTF_8))
         return hashBytes.joinToString("") { "%02x".format(it) }
