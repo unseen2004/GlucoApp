@@ -10,7 +10,8 @@ class AppRepositoryImpl @Inject constructor(
     private val mealDao: MealDao,
     private val activityDao: ActivityDao,
     private val insulinTypeDao: InsulinTypeDao,
-    private val ingredientDao: IngredientDao
+    private val ingredientDao: IngredientDao,
+    private val mealWithIngredientDao: MealWithIngredientDao // Added this line
 ) : AppRepository {
 
     // User operations

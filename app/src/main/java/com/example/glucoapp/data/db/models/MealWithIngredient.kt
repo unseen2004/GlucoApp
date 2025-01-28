@@ -22,7 +22,7 @@ import androidx.room.PrimaryKey
         )
     ]
 )
-data class MealIngredient(
+data class MealWithIngredient(
     @PrimaryKey(autoGenerate = true) val mealIngredientId: Int = 0,
     @ColumnInfo(name = "mealId") val mealId: Int,
     @ColumnInfo(name = "ingredientId") val ingredientId: Int,

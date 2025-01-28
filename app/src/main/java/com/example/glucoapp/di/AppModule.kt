@@ -71,13 +71,18 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideMealWithIngredientDao(db: AppDatabase): MealWithIngredientDao = db.mealWithIngredientDao() // Added this line
+
+    @Provides
+    @Singleton
     fun provideAppRepository(
         userDao: UserDao,
         noteDao: NoteDao,
         mealDao: MealDao,
         activityDao: ActivityDao,
         insulinTypeDao: InsulinTypeDao,
-        ingredientDao: IngredientDao
+        ingredientDao: IngredientDao,
+        mealWithIngredientDao: MealWithIngredientDao // Added this line
     ): AppRepository {
         return AppRepositoryImpl(
             userDao,
@@ -85,7 +90,8 @@ object AppModule {
             mealDao,
             activityDao,
             insulinTypeDao,
-            ingredientDao
+            ingredientDao,
+            mealWithIngredientDao // Added this line
         )
     }
 
@@ -94,7 +100,10 @@ object AppModule {
     fun provideUserPreferences(@ApplicationContext context: Context): UserPreferences {
         return UserPreferences(context)
     }
-}sealed class Screen(val route: String) {
+}
+
+
+sealed class Screen(val route: String) {
     object Login : Screen("login")
     object Notes : Screen("notes")
     object Meals : Screen("meals")
