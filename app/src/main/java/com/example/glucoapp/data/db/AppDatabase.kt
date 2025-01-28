@@ -19,6 +19,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun activityDao(): ActivityDao
     abstract fun insulinTypeDao(): InsulinTypeDao
     abstract fun ingredientDao(): IngredientDao
+    abstract fun mealIngredientDao(): MealIngredientDao
 
     companion object {
         @Volatile
