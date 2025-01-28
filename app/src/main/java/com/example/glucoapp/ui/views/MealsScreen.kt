@@ -26,11 +26,13 @@ fun MealsScreen(
     navController: NavController,
     viewModel: MealsViewModel = hiltViewModel()
 ) {
+    val userId by viewModel.userId.collectAsState(initial = null)
     val meals by viewModel.meals.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.loadUserById(1) // TODO: Replace with actual user ID
-        viewModel.loadMealsByUserId(1) // TODO: Replace with actual user ID
+    LaunchedEffect(userId) {
+        userId?.let {
+            viewModel.loadMealsByUserId(it)
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

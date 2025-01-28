@@ -29,7 +29,7 @@ fun AddMealScreen(
     var carbs by remember { mutableStateOf("") }
     var fat by remember { mutableStateOf("") }
     var kcal by remember { mutableStateOf("") }
-    var userId by remember { mutableStateOf(1) } // Replace with actual user ID
+    val userId by viewModel.userId.collectAsState(initial = null)
     var showIngredientDialog by remember { mutableStateOf(false) }
     val ingredients by viewModel.ingredients.collectAsState(initial = emptyList())
 
@@ -49,21 +49,23 @@ fun AddMealScreen(
                 },
                 actions = {
                     IconButton(onClick = {
-                        // Create a Meal object with entered data
-                        val newMeal = Meal(
-                            userId = userId,
-                            foodName = mealName,
-                            protein = protein.toDoubleOrNull(),
-                            carbs = carbs.toDoubleOrNull(),
-                            fat = fat.toDoubleOrNull(),
-                            kcal = kcal.toDoubleOrNull()
-                        )
+                        userId?.let {
+                            // Create a Meal object with entered data
+                            val newMeal = Meal(
+                                userId = it,
+                                foodName = mealName,
+                                protein = protein.toDoubleOrNull(),
+                                carbs = carbs.toDoubleOrNull(),
+                                fat = fat.toDoubleOrNull(),
+                                kcal = kcal.toDoubleOrNull()
+                            )
 
-                        // Insert the meal using the ViewModel
-                        viewModel.insertMeal(newMeal)
+                            // Insert the meal using the ViewModel
+                            viewModel.insertMeal(newMeal)
 
-                        // Navigate back to the Meals screen
-                        navController.navigate(Screen.Main.route)
+                            // Navigate back to the Meals screen
+                            navController.navigate(Screen.Main.route)
+                        }
                     }) {
                         Icon(Icons.Filled.Check, "Save")
                     }

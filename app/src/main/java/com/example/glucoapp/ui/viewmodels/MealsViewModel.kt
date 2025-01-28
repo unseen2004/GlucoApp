@@ -2,6 +2,7 @@ package com.example.glucoapp.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.glucoapp.data.UserPreferences
 import com.example.glucoapp.data.db.models.Meal
 import com.example.glucoapp.data.db.models.User
 import com.example.glucoapp.data.db.models.Ingredient
@@ -14,7 +15,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 @HiltViewModel
-class MealsViewModel @Inject constructor(private val repository: AppRepository) : ViewModel() {
+class MealsViewModel @Inject constructor(
+    private val repository: AppRepository,
+    private val userPreferences: UserPreferences
+) : ViewModel() {
 
     private val _meals = MutableStateFlow<List<Meal>>(emptyList())
     val meals: StateFlow<List<Meal>> = _meals.asStateFlow()
@@ -25,10 +29,17 @@ class MealsViewModel @Inject constructor(private val repository: AppRepository) 
     private val _ingredients = MutableStateFlow<List<Ingredient>>(emptyList())
     val ingredients: StateFlow<List<Ingredient>> = _ingredients.asStateFlow()
 
-    fun loadUserById(userId: Int) {
+    private val _userId = MutableStateFlow<Int?>(null)
+    val userId: StateFlow<Int?> = _userId.asStateFlow()
+
+    init {
+        loadUserId()
+    }
+
+    private fun loadUserId() {
         viewModelScope.launch {
-            repository.getUserById(userId).collect { user ->
-                _user.value = user
+            userPreferences.userId.collect { id ->
+                _userId.value = id
             }
         }
     }
@@ -44,21 +55,21 @@ class MealsViewModel @Inject constructor(private val repository: AppRepository) 
     fun insertMeal(meal: Meal) {
         viewModelScope.launch {
             repository.insertMeal(meal)
-            _user.value?.userId?.let { loadMealsByUserId(it) }
+            _userId.value?.let { loadMealsByUserId(it) }
         }
     }
 
     fun deleteMeal(meal: Meal) {
         viewModelScope.launch {
             repository.deleteMeal(meal)
-            _user.value?.userId?.let { loadMealsByUserId(it) }
+            _userId.value?.let { loadMealsByUserId(it) }
         }
     }
 
     fun updateMeal(meal: Meal) {
         viewModelScope.launch {
             repository.updateMeal(meal)
-            _user.value?.userId?.let { loadMealsByUserId(it) }
+            _userId.value?.let { loadMealsByUserId(it) }
         }
     }
 
