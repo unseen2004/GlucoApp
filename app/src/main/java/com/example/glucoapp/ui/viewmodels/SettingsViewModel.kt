@@ -181,7 +181,14 @@ class SettingsViewModel @Inject constructor(
             }
         }
     }
-
+    fun deleteUserAndLogout() {
+        viewModelScope.launch {
+            _userId.value?.let { userId ->
+                repository.deleteUserAndRelatedData(userId)
+                repository.logoutUser()
+            }
+        }
+    }
     private fun loadActivities() {
         viewModelScope.launch {
             _userId.value?.let { userId ->

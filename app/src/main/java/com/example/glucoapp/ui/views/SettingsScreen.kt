@@ -29,6 +29,7 @@ fun SettingsScreen(
     var showDeleteIngredientDialog by remember { mutableStateOf(false) }
     var showAddActivityDialog by remember { mutableStateOf(false) }
     var showDeleteActivityDialog by remember { mutableStateOf(false) }
+    var showDeleteUserDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -51,6 +52,10 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(8.dp))
             Button(onClick = { showDeleteIngredientDialog = true }) {
                 Text("Delete Ingredient")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = { showDeleteUserDialog = true }) {
+                Text("Delete User")
             }
             Spacer(modifier = Modifier.height(8.dp))
             Button(onClick = { showAddActivityDialog = true }) {
@@ -86,7 +91,17 @@ fun SettingsScreen(
     if (showDeleteIngredientDialog) {
         DeleteIngredientDialog(onDismiss = { showDeleteIngredientDialog = false }, viewModel = viewModel)
     }
-
+    if (showDeleteUserDialog) {
+        DeleteUserDialog(
+            onDismiss = { showDeleteUserDialog = false },
+            onConfirm = {
+                viewModel.deleteUserAndLogout()
+                navController.navigate("login") {
+                    popUpTo("settings") { inclusive = true }
+                }
+            }
+        )
+    }
     if (showAddActivityDialog) {
         AddActivityDialog(onDismiss = { showAddActivityDialog = false }, viewModel = viewModel)
     }
@@ -95,7 +110,24 @@ fun SettingsScreen(
         DeleteActivityDialog(onDismiss = { showDeleteActivityDialog = false }, viewModel = viewModel)
     }
 }
-
+@Composable
+fun DeleteUserDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Delete User") },
+        text = { Text("Are you sure you want to delete your account and all related data? This action cannot be undone.") },
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text("Delete")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
 @Composable
 fun AddActivityDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
     var activityType by remember { mutableStateOf("") }
