@@ -25,14 +25,18 @@ import com.example.glucoapp.navigation.Screen
 import com.example.glucoapp.ui.viewmodels.MainViewModel
 import com.example.glucoapp.R
 import androidx.compose.ui.res.stringResource
+import com.example.glucoapp.ui.viewmodels.SettingsViewModel
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     navController: NavController,
     viewModel: MainViewModel = hiltViewModel(),
+    settingsViewModel: SettingsViewModel = hiltViewModel(), // Inject SettingsViewModel
     userPreferences: UserPreferences
 ) {
     val selectedScreen by viewModel.selectedScreen.collectAsState()
+    val currentLanguage by settingsViewModel.currentLanguage.collectAsState()
 
     Scaffold(
         topBar = {
@@ -88,7 +92,11 @@ fun MainScreen(
             when (selectedScreen) {
                 Screen.Notes -> NotesScreen(navController, userPreferences = userPreferences)
                 Screen.Meals -> MealsScreen(navController, isDoctor = userPreferences.isDoctorLoggedIn.collectAsState(initial = false).value)
-                Screen.Settings -> SettingsScreen(navController, isDoctor = userPreferences.isDoctorLoggedIn.collectAsState(initial = false).value)
+                Screen.Settings -> SettingsScreen(
+                    navController,
+                    isDoctor = userPreferences.isDoctorLoggedIn.collectAsState(initial = false).value,
+                    language = currentLanguage // Pass the language parameter
+                )
                 else -> {}
             }
         }

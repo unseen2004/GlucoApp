@@ -25,7 +25,8 @@ import kotlinx.coroutines.launch
 fun SettingsScreen(
     navController: NavController,
     viewModel: SettingsViewModel = hiltViewModel(),
-    isDoctor: Boolean = false
+    isDoctor: Boolean = false,
+    language: String
 ) {
     var showAddInsulinDialog by remember { mutableStateOf(false) }
     var showAddIngredientDialog by remember { mutableStateOf(false) }
