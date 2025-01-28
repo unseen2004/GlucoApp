@@ -1,5 +1,6 @@
 package com.example.glucoapp.ui.views
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,6 +19,8 @@ import com.example.glucoapp.data.db.models.Ingredient
 import com.example.glucoapp.ui.viewmodels.SettingsViewModel
 import com.example.glucoapp.R
 import androidx.compose.ui.res.stringResource
+import kotlinx.coroutines.launch
+
 @Composable
 fun SettingsScreen(
     navController: NavController,
@@ -31,6 +34,9 @@ fun SettingsScreen(
     var showAddActivityDialog by remember { mutableStateOf(false) }
     var showDeleteActivityDialog by remember { mutableStateOf(false) }
     var showDeleteUserDialog by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+    val currentLanguage by viewModel.currentLanguage.collectAsState()
+
 
     Column(
         modifier = Modifier
@@ -53,6 +59,16 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(8.dp))
             Button(onClick = { showDeleteIngredientDialog = true }) {
                 Text(stringResource(R.string.delete_ingredient))
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = {
+                coroutineScope.launch {
+                    val newLanguage = if (currentLanguage == "en") "ja" else "en"
+                    viewModel.changeLanguage(newLanguage)
+                    Log.d("SettingsScreen", "Button clicked. Current language: $currentLanguage, New language: $newLanguage")
+                }
+            }) {
+                Text(stringResource(R.string.change_language))
             }
             Spacer(modifier = Modifier.height(8.dp))
             Button(onClick = { showDeleteUserDialog = true }) {
@@ -148,6 +164,7 @@ fun AddActivityDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
                     onValueChange = { activityType = it },
                     label = { Text(stringResource(R.string.activity_type)) },
                     modifier = Modifier.fillMaxWidth()
+
                 )
                 OutlinedTextField(
                     value = duration,

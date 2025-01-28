@@ -1,5 +1,6 @@
 package com.example.glucoapp.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.glucoapp.data.UserPreferences
@@ -10,9 +11,11 @@ import com.example.glucoapp.data.db.models.InsulinType
 import com.example.glucoapp.data.db.models.Activity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
@@ -29,7 +32,7 @@ class SettingsViewModel @Inject constructor(
     private val repository: AppRepository,
     private val userPreferences: UserPreferences
 ) : ViewModel() {
-
+    private val _currentLanguage = MutableStateFlow("en")
     private val _uiState = MutableStateFlow<SettingsUiState>(SettingsUiState.Loading)
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
@@ -50,8 +53,26 @@ class SettingsViewModel @Inject constructor(
         loadInsulinTypes()
         loadIngredients()
         loadActivities()
+        loadCurrentLanguage()
     }
-
+    private fun loadCurrentLanguage() {
+        viewModelScope.launch {
+            userPreferences.languageFlow.collect { language ->
+                _currentLanguage.value = language
+            }
+        }
+    }
+    val currentLanguage = userPreferences.languageFlow.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = "en"
+    )
+    fun changeLanguage(newLanguage: String) {
+        viewModelScope.launch {
+            userPreferences.saveLanguage(newLanguage) // Save language
+            Log.d("SettingsViewModel", "changeLanguage called with: $newLanguage")
+        }
+    }
     private fun loadUserId() {
         viewModelScope.launch {
             userPreferences.userId.collect { id ->

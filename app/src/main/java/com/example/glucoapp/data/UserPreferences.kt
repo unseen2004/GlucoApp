@@ -22,10 +22,21 @@ class UserPreferences @Inject constructor(
         val LANGUAGE_KEY = stringPreferencesKey("language")
         val USER_ID_KEY = intPreferencesKey("user_id")
         val IS_DOCTOR_LOGGED_IN = booleanPreferencesKey("is_doctor_logged_in")
-    }
 
-    // DataStore instance (initialize once)
+    }
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_preferences")
+
+    val languageFlow: Flow<String> = context.dataStore.data
+        .map { preferences ->
+            preferences[PreferencesKeys.LANGUAGE_KEY] ?: "en"
+        }
+
+    suspend fun saveLanguage(language: String) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.LANGUAGE_KEY] = language
+        }
+    }
+    // DataStore instance (initialize once)
 
     // User ID operations
     val userId: Flow<Int?> = context.dataStore.data.map { preferences ->
@@ -72,17 +83,6 @@ class UserPreferences @Inject constructor(
             preferences[PreferencesKeys.THEME_KEY] ?: "system"
         }
 
-    // Language preferences
-    suspend fun saveLanguage(language: String) {
-        context.dataStore.edit { preferences ->
-            preferences[PreferencesKeys.LANGUAGE_KEY] = language
-        }
-    }
-
-    val languageFlow: Flow<String> = context.dataStore.data
-        .map { preferences ->
-            preferences[PreferencesKeys.LANGUAGE_KEY] ?: "en"
-        }
 
     // Clear all preferences
     suspend fun clearPreferences() {

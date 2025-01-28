@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="login">ログイン</string>
+    <string name="change_language">english</string>
     <string name="app_name">グルコースアプリ</string>
     <string name="action_settings">設定</string>
     <string name="notes_screen_title">ノート</string>
