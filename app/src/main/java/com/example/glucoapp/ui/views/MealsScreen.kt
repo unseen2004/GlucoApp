@@ -24,7 +24,8 @@ import com.example.glucoapp.data.db.models.Meal
 @Composable
 fun MealsScreen(
     navController: NavController,
-    viewModel: MealsViewModel = hiltViewModel()
+    viewModel: MealsViewModel = hiltViewModel(),
+    isDoctor: Boolean = false
 ) {
     val userId by viewModel.userId.collectAsState(initial = null)
     val meals by viewModel.meals.collectAsState()
@@ -39,18 +40,21 @@ fun MealsScreen(
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(meals) { meal ->
                 MealItem(meal = meal, onDeleteClick = {
-                    viewModel.deleteMeal(meal)
+                    if (!isDoctor) {
+                        viewModel.deleteMeal(meal)
+                    }
                 })
             }
         }
-
-        FloatingActionButton(
-            onClick = { navController.navigate(Screen.AddMeal.route) },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
-        ) {
-            Icon(Icons.Filled.Add, "Add Meal")
+        if (!isDoctor) {
+            FloatingActionButton(
+                onClick = { navController.navigate(Screen.AddMeal.route) },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
+            ) {
+                Icon(Icons.Filled.Add, "Add Meal")
+            }
         }
     }
 }

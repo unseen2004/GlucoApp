@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.glucoapp.data.UserPreferences
 import com.example.glucoapp.navigation.Screen
 import com.example.glucoapp.ui.viewmodels.MainViewModel
 
@@ -27,7 +28,8 @@ import com.example.glucoapp.ui.viewmodels.MainViewModel
 @Composable
 fun MainScreen(
     navController: NavController,
-    viewModel: MainViewModel = hiltViewModel()
+    viewModel: MainViewModel = hiltViewModel(),
+    userPreferences: UserPreferences
 ) {
     val selectedScreen by viewModel.selectedScreen.collectAsState()
 
@@ -83,9 +85,9 @@ fun MainScreen(
                 .padding(innerPadding)
         ) {
             when (selectedScreen) {
-                Screen.Notes -> NotesScreen(navController)
-                Screen.Meals -> MealsScreen(navController)
-                Screen.Settings -> SettingsScreen(navController)
+                Screen.Notes -> NotesScreen(navController, userPreferences = userPreferences)
+                Screen.Meals -> MealsScreen(navController, isDoctor = userPreferences.isDoctorLoggedIn.collectAsState(initial = false).value)
+                Screen.Settings -> SettingsScreen(navController, isDoctor = userPreferences.isDoctorLoggedIn.collectAsState(initial = false).value)
                 else -> {}
             }
         }

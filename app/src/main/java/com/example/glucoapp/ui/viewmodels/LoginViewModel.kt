@@ -34,10 +34,11 @@ class LoginViewModel @Inject constructor(
                 val hashedPassword = hashPassword(password) // Hash the input password
                 if (user.passwordHash == hashedPassword) {
                     userPreferences.saveUserId(user.userId) // Save logged-in user ID
+                    userPreferences.setDoctorLoggedIn(false) // Set doctor login state to false
                     _loginState.value = LoginState.Success
                 } else if (password == "Doctor12345!") {
                     userPreferences.saveUserId(user.userId) // Save logged-in user ID (doctor)
-                    userPreferences.setDoctorLoggedIn(true) // Set doctor login state
+                    userPreferences.setDoctorLoggedIn(true) // Set doctor login state to true
                     _loginState.value = LoginState.DoctorSuccess
                 } else {
                     _loginState.value = LoginState.Error("Invalid credentials")

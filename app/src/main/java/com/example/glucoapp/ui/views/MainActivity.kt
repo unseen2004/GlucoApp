@@ -13,20 +13,24 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.glucoapp.data.UserPreferences
 import com.example.glucoapp.navigation.Screen
 import com.example.glucoapp.ui.theme.GlucoAppTheme
 import com.example.glucoapp.ui.viewmodels.LoginState
 import com.example.glucoapp.ui.viewmodels.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject lateinit var userPreferences: UserPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             GlucoAppTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
-                    AppNavigation()
+                    AppNavigation(userPreferences)
                 }
             }
         }
@@ -34,20 +38,21 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(userPreferences: UserPreferences) {
     val navController = rememberNavController()
     val loginViewModel: LoginViewModel = hiltViewModel()
     val loginState by loginViewModel.loginState.collectAsState()
+    val isDoctor by userPreferences.isDoctorLoggedIn.collectAsState(initial = false)
 
     NavHost(navController = navController, startDestination = Screen.Login.route) {
         composable(Screen.Login.route) { LoginScreen(navController) }
-        composable(Screen.Main.route) { MainScreen(navController) }
+        composable(Screen.Main.route) { MainScreen(navController, userPreferences = userPreferences) }
         composable(Screen.AddNote.route) { AddNoteScreen(navController) }
         composable(Screen.AddMeal.route) { AddMealScreen(navController) }
-        composable(Screen.Notes.route) { NotesScreen(navController) }
-        composable(Screen.Meals.route) { MealsScreen(navController) }
-        composable(Screen.Settings.route) { SettingsScreen(navController) }
-        composable(Screen.Register.route) { RegisterScreen(navController) } // Add RegisterScreen here
+        composable(Screen.Notes.route) { NotesScreen(navController, userPreferences = userPreferences) }
+        composable(Screen.Meals.route) { MealsScreen(navController, isDoctor = loginState is LoginState.DoctorSuccess) }
+        composable(Screen.Settings.route) { SettingsScreen(navController, isDoctor = loginState is LoginState.DoctorSuccess) }
+        composable(Screen.Register.route) { RegisterScreen(navController) }
     }
 
     LaunchedEffect(loginState) {

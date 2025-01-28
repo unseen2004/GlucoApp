@@ -17,18 +17,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.glucoapp.data.UserPreferences
 import com.example.glucoapp.data.db.models.Note
 import com.example.glucoapp.navigation.Screen
 import com.example.glucoapp.ui.viewmodels.NoteViewModel
+import javax.inject.Inject
 
 @Composable
 fun NotesScreen(
     navController: NavController,
     viewModel: NoteViewModel = hiltViewModel(),
-    isDoctor: Boolean = false
+    userPreferences: UserPreferences
 ) {
     val userId by viewModel.userId.collectAsState(initial = null)
     val notes by viewModel.notes.collectAsState()
+    val isDoctor by userPreferences.isDoctorLoggedIn.collectAsState(initial = false)
 
     LaunchedEffect(userId) {
         userId?.let {
@@ -39,7 +42,7 @@ fun NotesScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(notes) { note ->
-                NoteItem(note = note, onDeleteClick = {
+                NoteItem(note = note, isDoctor = isDoctor, onDeleteClick = {
                     if (!isDoctor) {
                         viewModel.deleteNote(note)
                     }
@@ -61,7 +64,7 @@ fun NotesScreen(
 }
 
 @Composable
-fun NoteItem(note: Note, onDeleteClick: () -> Unit) {
+fun NoteItem(note: Note, isDoctor: Boolean, onDeleteClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -112,8 +115,10 @@ fun NoteItem(note: Note, onDeleteClick: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.CenterEnd
             ) {
-                IconButton(onClick = onDeleteClick) {
-                    Icon(Icons.Filled.Delete, contentDescription = "Delete")
+                if (!isDoctor) { // Only show delete button if not a doctor
+                    IconButton(onClick = onDeleteClick) {
+                        Icon(Icons.Filled.Delete, "Delete")
+                    }
                 }
             }
         }

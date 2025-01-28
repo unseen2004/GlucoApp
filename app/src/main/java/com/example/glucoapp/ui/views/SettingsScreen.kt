@@ -17,11 +17,11 @@ import com.example.glucoapp.data.db.models.InsulinType
 import com.example.glucoapp.data.db.models.Ingredient
 import com.example.glucoapp.ui.viewmodels.SettingsViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     navController: NavController,
-    viewModel: SettingsViewModel = hiltViewModel()
+    viewModel: SettingsViewModel = hiltViewModel(),
+    isDoctor: Boolean = false
 ) {
     var showAddInsulinDialog by remember { mutableStateOf(false) }
     var showAddIngredientDialog by remember { mutableStateOf(false) }
@@ -36,30 +36,32 @@ fun SettingsScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = { showAddInsulinDialog = true }) {
-            Text("Add Insulin")
+        if (!isDoctor) {
+            Button(onClick = { showAddInsulinDialog = true }) {
+                Text("Add Insulin")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = { showAddIngredientDialog = true }) {
+                Text("Add Ingredient")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = { showDeleteInsulinDialog = true }) {
+                Text("Delete Insulin")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = { showDeleteIngredientDialog = true }) {
+                Text("Delete Ingredient")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = { showAddActivityDialog = true }) {
+                Text("Add Activity")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = { showDeleteActivityDialog = true }) {
+                Text("Delete Activity")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
         }
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = { showAddIngredientDialog = true }) {
-            Text("Add Ingredient")
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = { showDeleteInsulinDialog = true }) {
-            Text("Delete Insulin")
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = { showDeleteIngredientDialog = true }) {
-            Text("Delete Ingredient")
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = { showAddActivityDialog = true }) {
-            Text("Add Activity")
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = { showDeleteActivityDialog = true }) {
-            Text("Delete Activity")
-        }
-        Spacer(modifier = Modifier.height(8.dp))
         Button(onClick = {
             navController.navigate("login") {
                 popUpTo("settings") { inclusive = true }
