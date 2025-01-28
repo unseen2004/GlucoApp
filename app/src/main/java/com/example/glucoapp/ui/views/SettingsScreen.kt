@@ -16,7 +16,8 @@ import com.example.glucoapp.data.db.models.Activity
 import com.example.glucoapp.data.db.models.InsulinType
 import com.example.glucoapp.data.db.models.Ingredient
 import com.example.glucoapp.ui.viewmodels.SettingsViewModel
-
+import com.example.glucoapp.R
+import androidx.compose.ui.res.stringResource
 @Composable
 fun SettingsScreen(
     navController: NavController,
@@ -39,31 +40,31 @@ fun SettingsScreen(
     ) {
         if (!isDoctor) {
             Button(onClick = { showAddInsulinDialog = true }) {
-                Text("Add Insulin")
+                Text(stringResource(R.string.add_insulin))
             }
             Spacer(modifier = Modifier.height(8.dp))
             Button(onClick = { showAddIngredientDialog = true }) {
-                Text("Add Ingredient")
+                Text(stringResource(R.string.add_ingredient))
             }
             Spacer(modifier = Modifier.height(8.dp))
             Button(onClick = { showDeleteInsulinDialog = true }) {
-                Text("Delete Insulin")
+                Text(stringResource(R.string.delete_insulin))
             }
             Spacer(modifier = Modifier.height(8.dp))
             Button(onClick = { showDeleteIngredientDialog = true }) {
-                Text("Delete Ingredient")
+                Text(stringResource(R.string.delete_ingredient))
             }
             Spacer(modifier = Modifier.height(8.dp))
             Button(onClick = { showDeleteUserDialog = true }) {
-                Text("Delete User")
+                Text(stringResource(R.string.delete_user))
             }
             Spacer(modifier = Modifier.height(8.dp))
             Button(onClick = { showAddActivityDialog = true }) {
-                Text("Add Activity")
+                Text(stringResource(R.string.add_activity))
             }
             Spacer(modifier = Modifier.height(8.dp))
             Button(onClick = { showDeleteActivityDialog = true }) {
-                Text("Delete Activity")
+                Text(stringResource(R.string.delete_activity))
             }
             Spacer(modifier = Modifier.height(8.dp))
         }
@@ -72,7 +73,7 @@ fun SettingsScreen(
                 popUpTo("settings") { inclusive = true }
             }
         }) {
-            Text("Logout")
+            Text(stringResource(R.string.logout))
         }
     }
 
@@ -110,24 +111,26 @@ fun SettingsScreen(
         DeleteActivityDialog(onDismiss = { showDeleteActivityDialog = false }, viewModel = viewModel)
     }
 }
+
 @Composable
 fun DeleteUserDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Delete User") },
-        text = { Text("Are you sure you want to delete your account and all related data? This action cannot be undone.") },
+        title = { Text(stringResource(R.string.delete_user_title)) },
+        text = { Text(stringResource(R.string.delete_user_confirmation)) },
         confirmButton = {
             Button(onClick = onConfirm) {
-                Text("Delete")
+                Text(stringResource(R.string.delete))
             }
         },
         dismissButton = {
             Button(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         }
     )
 }
+
 @Composable
 fun AddActivityDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
     var activityType by remember { mutableStateOf("") }
@@ -137,26 +140,26 @@ fun AddActivityDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add Activity") },
+        title = { Text(stringResource(R.string.add_activity)) },
         text = {
             Column {
                 OutlinedTextField(
                     value = activityType,
                     onValueChange = { activityType = it },
-                    label = { Text("Activity Type") },
+                    label = { Text(stringResource(R.string.activity_type)) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     value = duration,
                     onValueChange = { duration = it },
-                    label = { Text("Duration (minutes)") },
+                    label = { Text(stringResource(R.string.duration)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     value = notes,
                     onValueChange = { notes = it },
-                    label = { Text("Notes") },
+                    label = { Text(stringResource(R.string.notes)) },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -174,12 +177,12 @@ fun AddActivityDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
                     onDismiss()
                 }
             }) {
-                Text("Add")
+                Text(stringResource(R.string.add))
             }
         },
         dismissButton = {
             Button(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         }
     )
@@ -191,7 +194,7 @@ fun DeleteActivityDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Delete Activity") },
+        title = { Text(stringResource(R.string.delete_activity)) },
         text = {
             LazyColumn {
                 items(activities) { activity ->
@@ -206,7 +209,7 @@ fun DeleteActivityDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
                             viewModel.deleteActivity(activity)
                             onDismiss()
                         }) {
-                            Text("Delete")
+                            Text(stringResource(R.string.delete))
                         }
                     }
                 }
@@ -214,11 +217,12 @@ fun DeleteActivityDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
         },
         confirmButton = {
             Button(onClick = onDismiss) {
-                Text("Close")
+                Text(stringResource(R.string.close))
             }
         }
     )
 }
+
 @Composable
 fun ChangePasswordDialog(
     onDismiss: () -> Unit,
@@ -228,25 +232,25 @@ fun ChangePasswordDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Change Password") },
+        title = { Text(stringResource(R.string.change_password)) },
         text = {
             Column {
                 OutlinedTextField(
                     value = newPassword,
                     onValueChange = { newPassword = it },
-                    label = { Text("New Password") },
+                    label = { Text(stringResource(R.string.new_password)) },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
         },
         confirmButton = {
             Button(onClick = { onSave(newPassword) }) {
-                Text("Save")
+                Text(stringResource(R.string.save))
             }
         },
         dismissButton = {
             Button(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         }
     )
@@ -261,25 +265,25 @@ fun ChangeDoctorPasswordDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Change Doctor Password") },
+        title = { Text(stringResource(R.string.change_doctor_password)) },
         text = {
             Column {
                 OutlinedTextField(
                     value = newPassword,
                     onValueChange = { newPassword = it },
-                    label = { Text("New Doctor Password") },
+                    label = { Text(stringResource(R.string.new_doctor_password)) },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
         },
         confirmButton = {
             Button(onClick = { onSave(newPassword) }) {
-                Text("Save")
+                Text(stringResource(R.string.save))
             }
         },
         dismissButton = {
             Button(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         }
     )
@@ -293,20 +297,20 @@ fun AddInsulinDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add Insulin") },
+        title = { Text(stringResource(R.string.add_insulin)) },
         text = {
             Column {
                 OutlinedTextField(
                     value = insulinName,
                     onValueChange = { insulinName = it },
-                    label = { Text("Insulin Name") },
+                    label = { Text(stringResource(R.string.insulin_name)) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = typeName,
                     onValueChange = { typeName = it },
-                    label = { Text("Type Name") },
+                    label = { Text(stringResource(R.string.type_name)) },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -320,12 +324,12 @@ fun AddInsulinDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
                     }
                 }
             ) {
-                Text("Add")
+                Text(stringResource(R.string.add))
             }
         },
         dismissButton = {
             Button(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         }
     )
@@ -342,37 +346,37 @@ fun AddIngredientDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add Ingredient") },
+        title = { Text(stringResource(R.string.add_ingredient)) },
         text = {
             Column {
                 OutlinedTextField(
                     value = ingredientName,
                     onValueChange = { ingredientName = it },
-                    label = { Text("Ingredient Name") },
+                    label = { Text(stringResource(R.string.ingredient_name)) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     value = protein,
                     onValueChange = { protein = it },
-                    label = { Text("Protein") },
+                    label = { Text(stringResource(R.string.protein)) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     value = carbs,
                     onValueChange = { carbs = it },
-                    label = { Text("Carbs") },
+                    label = { Text(stringResource(R.string.carbs)) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     value = fat,
                     onValueChange = { fat = it },
-                    label = { Text("Fat") },
+                    label = { Text(stringResource(R.string.fat)) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     value = kcal,
                     onValueChange = { kcal = it },
-                    label = { Text("Kcal") },
+                    label = { Text(stringResource(R.string.kcal)) },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -391,12 +395,12 @@ fun AddIngredientDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
                 }
                 onDismiss()
             }) {
-                Text("Add")
+                Text(stringResource(R.string.add))
             }
         },
         dismissButton = {
             Button(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         }
     )
@@ -408,7 +412,7 @@ fun DeleteInsulinDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Delete Insulin") },
+        title = { Text(stringResource(R.string.delete_insulin)) },
         text = {
             LazyColumn {
                 items(insulinTypes) { insulinType ->
@@ -423,7 +427,7 @@ fun DeleteInsulinDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
                             viewModel.deleteInsulinType(insulinType)
                             onDismiss()
                         }) {
-                            Text("Delete")
+                            Text(stringResource(R.string.delete))
                         }
                     }
                 }
@@ -431,7 +435,7 @@ fun DeleteInsulinDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
         },
         confirmButton = {
             Button(onClick = onDismiss) {
-                Text("Close")
+                Text(stringResource(R.string.close))
             }
         }
     )
@@ -443,7 +447,7 @@ fun DeleteIngredientDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) 
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Delete Ingredient") },
+        title = { Text(stringResource(R.string.delete_ingredient)) },
         text = {
             LazyColumn {
                 items(ingredients) { ingredient ->
@@ -458,7 +462,7 @@ fun DeleteIngredientDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) 
                             viewModel.deleteIngredient(ingredient)
                             onDismiss()
                         }) {
-                            Text("Delete")
+                            Text(stringResource(R.string.delete))
                         }
                     }
                 }
@@ -466,7 +470,7 @@ fun DeleteIngredientDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) 
         },
         confirmButton = {
             Button(onClick = onDismiss) {
-                Text("Close")
+                Text(stringResource(R.string.close))
             }
         }
     )

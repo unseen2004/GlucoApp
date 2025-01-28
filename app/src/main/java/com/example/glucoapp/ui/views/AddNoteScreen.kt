@@ -40,7 +40,8 @@ import com.example.glucoapp.data.db.models.InsulinType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.DropdownMenuItem
-
+import com.example.glucoapp.R
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -84,10 +85,10 @@ fun AddNoteScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add Note") },
+                title = { Text(stringResource(R.string.add_note_title)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigate(Screen.Main.route) }) {
-                        Icon(Icons.Filled.Close, "Cancel")
+                        Icon(Icons.Filled.Close, stringResource(R.string.cancel))
                     }
                 },
                 actions = {
@@ -109,7 +110,7 @@ fun AddNoteScreen(
                             navController.navigate(Screen.Main.route)
                         }
                     }) {
-                        Icon(Icons.Filled.Check, "Save")
+                        Icon(Icons.Filled.Check, stringResource(R.string.save))
                     }
                 }
             )
@@ -125,7 +126,7 @@ fun AddNoteScreen(
             OutlinedTextField(
                 value = noteText,
                 onValueChange = { noteText = it },
-                label = { Text("Note Text") },
+                label = { Text(stringResource(R.string.note_text)) },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -133,7 +134,7 @@ fun AddNoteScreen(
             OutlinedTextField(
                 value = glucoseLevel,
                 onValueChange = { glucoseLevel = it },
-                label = { Text("Glucose Level") },
+                label = { Text(stringResource(R.string.glucose_level)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -150,7 +151,7 @@ fun AddNoteScreen(
                     readOnly = true,
                     value = selectedInsulinType?.typeName ?: "",
                     onValueChange = {},
-                    label = { Text("Insulin Type") },
+                    label = { Text(stringResource(R.string.insulin_type)) },
                     trailingIcon = {
                         ExposedDropdownMenuDefaults.TrailingIcon(
                             expanded = insulinTypeExpanded
@@ -177,7 +178,7 @@ fun AddNoteScreen(
             OutlinedTextField(
                 value = insulinAmount,
                 onValueChange = { insulinAmount = it },
-                label = { Text("Insulin Amount") },
+                label = { Text(stringResource(R.string.insulin_amount)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -186,7 +187,7 @@ fun AddNoteScreen(
             OutlinedTextField(
                 value = WW,
                 onValueChange = { WW = it },
-                label = { Text("WW") },
+                label = { Text(stringResource(R.string.ww)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -195,7 +196,7 @@ fun AddNoteScreen(
             OutlinedTextField(
                 value = WBT,
                 onValueChange = { WBT = it },
-                label = { Text("WBT") },
+                label = { Text(stringResource(R.string.wbt)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -210,7 +211,7 @@ fun AddNoteScreen(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Add Meal")
+                Text(stringResource(R.string.add_meal))
             }
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -225,7 +226,7 @@ fun AddNoteScreen(
                     readOnly = true,
                     value = selectedActivity?.activityType ?: "",
                     onValueChange = {},
-                    label = { Text("Activity") },
+                    label = { Text(stringResource(R.string.activity)) },
                     trailingIcon = {
                         ExposedDropdownMenuDefaults.TrailingIcon(
                             expanded = activityExpanded
@@ -253,7 +254,7 @@ fun AddNoteScreen(
     if (showMealSelectionDialog) {
         AlertDialog(
             onDismissRequest = { showMealSelectionDialog = false },
-            title = { Text("Select Meal") },
+            title = { Text(stringResource(R.string.select_meal)) },
             text = {
                 LazyColumn {
                     items(meals) { meal ->
@@ -261,14 +262,14 @@ fun AddNoteScreen(
                             selectedMeal = meal
                             showMealSelectionDialog = false
                         }) {
-                            Text(meal.foodName ?: "Unknown Meal")
+                            Text(meal.foodName ?: stringResource(R.string.unknown_meal))
                         }
                     }
                 }
             },
             confirmButton = {
                 Button(onClick = { showMealSelectionDialog = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )

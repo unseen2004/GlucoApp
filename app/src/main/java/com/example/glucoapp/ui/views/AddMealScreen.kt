@@ -17,6 +17,17 @@ import com.example.glucoapp.data.db.models.Meal
 import com.example.glucoapp.data.db.models.Ingredient
 import com.example.glucoapp.navigation.Screen
 import com.example.glucoapp.ui.viewmodels.MealsViewModel
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.glucoapp.R
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,7 +44,6 @@ fun AddMealScreen(
     var showIngredientDialog by remember { mutableStateOf(false) }
     val ingredients by viewModel.ingredients.collectAsState(initial = emptyList())
 
-    // Load ingredients when the screen is first shown
     LaunchedEffect(Unit) {
         viewModel.loadIngredients()
     }
@@ -41,16 +51,15 @@ fun AddMealScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add Meal") },
+                title = { Text(stringResource(R.string.add_meal_title)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigate(Screen.Main.route) }) {
-                        Icon(Icons.Filled.Close, "Cancel")
+                        Icon(Icons.Filled.Close, stringResource(R.string.cancel))
                     }
                 },
                 actions = {
                     IconButton(onClick = {
                         userId?.let {
-                            // Create a Meal object with entered data
                             val newMeal = Meal(
                                 userId = it,
                                 foodName = mealName,
@@ -59,15 +68,11 @@ fun AddMealScreen(
                                 fat = fat.toDoubleOrNull(),
                                 kcal = kcal.toDoubleOrNull()
                             )
-
-                            // Insert the meal using the ViewModel
                             viewModel.insertMeal(newMeal)
-
-                            // Navigate back to the Meals screen
                             navController.navigate(Screen.Main.route)
                         }
                     }) {
-                        Icon(Icons.Filled.Check, "Save")
+                        Icon(Icons.Filled.Check, stringResource(R.string.save))
                     }
                 }
             )
@@ -83,7 +88,7 @@ fun AddMealScreen(
             OutlinedTextField(
                 value = mealName,
                 onValueChange = { mealName = it },
-                label = { Text("Meal Name") },
+                label = { Text(stringResource(R.string.meal_name)) },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -91,7 +96,7 @@ fun AddMealScreen(
             OutlinedTextField(
                 value = protein,
                 onValueChange = { protein = it },
-                label = { Text("Protein (g)") },
+                label = { Text(stringResource(R.string.protein)) },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -99,7 +104,7 @@ fun AddMealScreen(
             OutlinedTextField(
                 value = carbs,
                 onValueChange = { carbs = it },
-                label = { Text("Carbs (g)") },
+                label = { Text(stringResource(R.string.carbs)) },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -107,7 +112,7 @@ fun AddMealScreen(
             OutlinedTextField(
                 value = fat,
                 onValueChange = { fat = it },
-                label = { Text("Fat (g)") },
+                label = { Text(stringResource(R.string.fat)) },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -115,7 +120,7 @@ fun AddMealScreen(
             OutlinedTextField(
                 value = kcal,
                 onValueChange = { kcal = it },
-                label = { Text("Kcal") },
+                label = { Text(stringResource(R.string.kcal)) },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -124,7 +129,7 @@ fun AddMealScreen(
                 onClick = { showIngredientDialog = true },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Add Ingredients")
+                Text(stringResource(R.string.add_ingredients))
             }
         }
     }
@@ -160,7 +165,7 @@ fun IngredientSelectionDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Select Ingredients") },
+        title = { Text(stringResource(R.string.select_ingredients)) },
         text = {
             LazyColumn {
                 items(ingredients) { ingredient ->
@@ -187,12 +192,12 @@ fun IngredientSelectionDialog(
         },
         confirmButton = {
             Button(onClick = { onIngredientsSelected(selectedIngredients) }) {
-                Text("Add")
+                Text(stringResource(R.string.add))
             }
         },
         dismissButton = {
             Button(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         }
     )

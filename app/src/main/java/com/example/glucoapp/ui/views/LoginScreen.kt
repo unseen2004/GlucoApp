@@ -12,6 +12,8 @@ import com.example.glucoapp.data.db.models.User
 import com.example.glucoapp.navigation.Screen
 import com.example.glucoapp.ui.viewmodels.LoginState
 import com.example.glucoapp.ui.viewmodels.LoginViewModel
+import com.example.glucoapp.R
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,11 +32,13 @@ fun LoginScreen(
                     popUpTo(Screen.Login.route) { inclusive = true }
                 }
             }
+
             is LoginState.DoctorSuccess -> {
                 navController.navigate(Screen.Main.route) {
                     popUpTo(Screen.Login.route) { inclusive = true }
                 }
             }
+
             else -> {}
         }
     }
@@ -49,18 +53,19 @@ fun LoginScreen(
             is LoginState.Loading -> {
                 CircularProgressIndicator()
             }
+
             else -> {
                 OutlinedTextField(
                     value = username,
                     onValueChange = { username = it },
-                    label = { Text("Username") },
+                    label = { Text(stringResource(R.string.username)) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text("Password1") },
+                    label = { Text(stringResource(R.string.password)) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -70,7 +75,7 @@ fun LoginScreen(
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Login")
+                    Text(stringResource(R.string.login))
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
@@ -79,11 +84,11 @@ fun LoginScreen(
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Create Account")
+                    Text(stringResource(R.string.create_account))
                 }
 
                 if (loginState is LoginState.Error) {
-                    Text("Error: ${(loginState as LoginState.Error).message}")
+                    Text(stringResource(R.string.error) + (loginState as LoginState.Error).message)
                 }
             }
         }

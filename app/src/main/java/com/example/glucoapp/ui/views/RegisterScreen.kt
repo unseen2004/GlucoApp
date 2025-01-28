@@ -11,7 +11,8 @@ import androidx.navigation.NavController
 import com.example.glucoapp.data.db.models.User
 import com.example.glucoapp.ui.viewmodels.LoginState
 import com.example.glucoapp.ui.viewmodels.LoginViewModel
-
+import com.example.glucoapp.R
+import androidx.compose.ui.res.stringResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
@@ -33,21 +34,21 @@ fun RegisterScreen(
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Username") },
+            label = { Text(stringResource(R.string.username)) },
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
+            label = { Text(stringResource(R.string.password)) },
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
-            label = { Text("Confirm Password") },
+            label = { Text(stringResource(R.string.confirm_password)) },
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -62,15 +63,15 @@ fun RegisterScreen(
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Create Account")
+            Text(stringResource(R.string.create_account))
         }
 
         if (passwordMismatchError) {
-            Text("Passwords do not match", color = MaterialTheme.colorScheme.error)
+            Text(stringResource(R.string.passwords_do_not_match), color = MaterialTheme.colorScheme.error)
         }
 
         if (loginState is LoginState.Error) {
-            Text("Error: ${(loginState as LoginState.Error).message}")
+            Text(stringResource(R.string.error) + (loginState as LoginState.Error).message)
         }
     }
 }

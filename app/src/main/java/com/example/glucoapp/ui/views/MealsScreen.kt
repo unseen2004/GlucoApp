@@ -20,7 +20,8 @@ import androidx.navigation.NavController
 import com.example.glucoapp.navigation.Screen
 import com.example.glucoapp.ui.viewmodels.MealsViewModel
 import com.example.glucoapp.data.db.models.Meal
-
+import com.example.glucoapp.R
+import androidx.compose.ui.res.stringResource
 @Composable
 fun MealsScreen(
     navController: NavController,
@@ -53,7 +54,7 @@ fun MealsScreen(
                     .align(Alignment.BottomEnd)
                     .padding(16.dp)
             ) {
-                Icon(Icons.Filled.Add, "Add Meal")
+                Icon(Icons.Filled.Add, stringResource(R.string.add_meal))
             }
         }
     }
@@ -73,26 +74,26 @@ fun MealItem(meal: Meal, onDeleteClick: () -> Unit) {
                 .padding(16.dp)
         ) {
             Text(
-                text = meal.foodName ?: "Unknown Meal",
+                text = meal.foodName ?: stringResource(R.string.unknown_meal),
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.headlineSmall
             )
             Spacer(modifier = Modifier.padding(4.dp))
 
-            if (meal.protein != null) {
-                Text(text = "Protein: ${meal.protein} g")
+            meal.protein?.let {
+                Text(text = stringResource(R.string.protein, it))
                 Spacer(modifier = Modifier.padding(2.dp))
             }
-            if (meal.carbs != null) {
-                Text(text = "Carbs: ${meal.carbs} g")
+            meal.carbs?.let {
+                Text(text = stringResource(R.string.carbs, it))
                 Spacer(modifier = Modifier.padding(2.dp))
             }
-            if (meal.fat != null) {
-                Text(text = "Fat: ${meal.fat} g")
+            meal.fat?.let {
+                Text(text = stringResource(R.string.fat, it))
                 Spacer(modifier = Modifier.padding(2.dp))
             }
-            if (meal.kcal != null) {
-                Text(text = "Kcal: ${meal.kcal}")
+            meal.kcal?.let {
+                Text(text = stringResource(R.string.kcal, it))
             }
 
             Box(
@@ -100,7 +101,7 @@ fun MealItem(meal: Meal, onDeleteClick: () -> Unit) {
                 contentAlignment = Alignment.CenterEnd
             ) {
                 IconButton(onClick = onDeleteClick) {
-                    Icon(Icons.Filled.Delete, contentDescription = "Delete")
+                    Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.delete))
                 }
             }
         }

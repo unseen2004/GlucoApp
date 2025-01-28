@@ -22,7 +22,8 @@ import com.example.glucoapp.data.db.models.Note
 import com.example.glucoapp.navigation.Screen
 import com.example.glucoapp.ui.viewmodels.NoteViewModel
 import javax.inject.Inject
-
+import com.example.glucoapp.R
+import androidx.compose.ui.res.stringResource
 @Composable
 fun NotesScreen(
     navController: NavController,
@@ -57,7 +58,7 @@ fun NotesScreen(
                     .align(Alignment.BottomEnd)
                     .padding(16.dp)
             ) {
-                Icon(Icons.Filled.Add, "Add Note")
+                Icon(Icons.Filled.Add, stringResource(R.string.add_note))
             }
         }
     }
@@ -77,37 +78,37 @@ fun NoteItem(note: Note, isDoctor: Boolean, onDeleteClick: () -> Unit) {
                 .padding(16.dp)
         ) {
             Text(
-                text = note.noteText ?: "No Note Text",
+                text = note.noteText ?: stringResource(R.string.no_note_text),
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.headlineSmall
             )
             Spacer(modifier = Modifier.padding(4.dp))
 
             Text(
-                text = "Glucose: ${note.glucoseLevel}",
+                text = stringResource(R.string.glucose, note.glucoseLevel ?: 0),
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.bodyLarge
             )
             Spacer(modifier = Modifier.padding(2.dp))
 
-            if (note.InsulinAmount != null) {
-                Text(text = "Insulin Amount: ${note.InsulinAmount} units")
+            note.InsulinAmount?.let {
+                Text(text = stringResource(R.string.insulin_amount, it))
                 Spacer(modifier = Modifier.padding(2.dp))
             }
-            if (note.WW != null) {
-                Text(text = "WW: ${note.WW}")
+            note.WW?.let {
+                Text(text = stringResource(R.string.ww, it))
                 Spacer(modifier = Modifier.padding(2.dp))
             }
-            if (note.WBT != null) {
-                Text(text = "WBT: ${note.WBT}")
+            note.WBT?.let {
+                Text(text = stringResource(R.string.wbt, it))
                 Spacer(modifier = Modifier.padding(2.dp))
             }
-            if (note.mealId != null) {
-                Text(text = "Meal added")
+            note.mealId?.let {
+                Text(text = stringResource(R.string.meal_added))
                 Spacer(modifier = Modifier.padding(2.dp))
             }
-            if (note.activityId != null) {
-                Text(text = "Activity added")
+            note.activityId?.let {
+                Text(text = stringResource(R.string.activity_added))
                 Spacer(modifier = Modifier.padding(2.dp))
             }
 
@@ -115,9 +116,9 @@ fun NoteItem(note: Note, isDoctor: Boolean, onDeleteClick: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.CenterEnd
             ) {
-                if (!isDoctor) { // Only show delete button if not a doctor
+                if (!isDoctor) {
                     IconButton(onClick = onDeleteClick) {
-                        Icon(Icons.Filled.Delete, "Delete")
+                        Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.delete))
                     }
                 }
             }

@@ -23,7 +23,8 @@ import androidx.navigation.NavController
 import com.example.glucoapp.data.UserPreferences
 import com.example.glucoapp.navigation.Screen
 import com.example.glucoapp.ui.viewmodels.MainViewModel
-
+import com.example.glucoapp.R
+import androidx.compose.ui.res.stringResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
@@ -35,7 +36,7 @@ fun MainScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Glucose Tracker") })
+            TopAppBar(title = { Text(stringResource(R.string.glucose_tracker)) })
         },
         bottomBar = {
             Row(
@@ -49,7 +50,7 @@ fun MainScreen(
                     modifier = Modifier.weight(1f),
                     content = {
                         Text(
-                            "Notes",
+                            stringResource(R.string.notes),
                             color = if (selectedScreen == Screen.Notes) Color.Red else Color.White
                         )
                     }
@@ -60,7 +61,7 @@ fun MainScreen(
                     modifier = Modifier.weight(1f),
                     content = {
                         Text(
-                            "Meals",
+                            stringResource(R.string.meals),
                             color = if (selectedScreen == Screen.Meals) Color.Red else Color.White
                         )
                     }
@@ -71,7 +72,7 @@ fun MainScreen(
                     modifier = Modifier.weight(1f),
                     content = {
                         Text(
-                            "Settings",
+                            stringResource(R.string.settings),
                             color = if (selectedScreen == Screen.Settings) Color.Red else Color.White
                         )
                     }
