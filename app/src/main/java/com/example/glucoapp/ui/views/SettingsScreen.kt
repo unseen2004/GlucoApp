@@ -99,6 +99,7 @@ fun AddActivityDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
     var activityType by remember { mutableStateOf("") }
     var duration by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
+    val userId by viewModel.userId.collectAsState(initial = null)
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -128,14 +129,16 @@ fun AddActivityDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
         },
         confirmButton = {
             Button(onClick = {
-                viewModel.addActivity(Activity(
-                    activityType = activityType,
-                    duration = duration.toInt(),
-                    notes = notes,
-                    userId = 1, // Replace with actual user ID
-                    timestamp = System.currentTimeMillis()
-                ))
-                onDismiss()
+                userId?.let {
+                    viewModel.addActivity(Activity(
+                        activityType = activityType,
+                        duration = duration.toInt(),
+                        notes = notes,
+                        userId = it, // Use the actual user ID
+                        timestamp = System.currentTimeMillis()
+                    ))
+                    onDismiss()
+                }
             }) {
                 Text("Add")
             }
