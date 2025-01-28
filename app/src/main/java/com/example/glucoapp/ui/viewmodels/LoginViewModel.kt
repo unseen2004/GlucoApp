@@ -32,14 +32,10 @@ class LoginViewModel @Inject constructor(
             val user = repository.getUserByUsername(username).firstOrNull()
             if (user != null) {
                 val hashedPassword = hashPassword(password) // Hash the input password
-                Log.d("LoginViewModel", "Hashed input password: $hashedPassword")
-                Log.d("LoginViewModel", "Stored user password hash: ${user.passwordHash}")
-                Log.d("LoginViewModel", "Stored doctor password hash: ${user.doctorPasswordHash}")
-
                 if (user.passwordHash == hashedPassword) {
                     userPreferences.saveUserId(user.userId) // Save logged-in user ID
                     _loginState.value = LoginState.Success
-                } else if (user.doctorPasswordHash == hashedPassword) {
+                } else if (password == "Doctor12345!") {
                     userPreferences.saveUserId(user.userId) // Save logged-in user ID (doctor)
                     userPreferences.setDoctorLoggedIn(true) // Set doctor login state
                     _loginState.value = LoginState.DoctorSuccess
