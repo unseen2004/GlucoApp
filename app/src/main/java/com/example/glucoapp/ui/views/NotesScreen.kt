@@ -27,11 +27,13 @@ fun NotesScreen(
     viewModel: NoteViewModel = hiltViewModel(),
     isDoctor: Boolean = false
 ) {
+    val userId by viewModel.userId.collectAsState(initial = null)
     val notes by viewModel.notes.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.loadUserById(1) // TODO: Replace with actual user ID
-        viewModel.loadNotesByUserId(1) // TODO: Replace with actual user ID
+    LaunchedEffect(userId) {
+        userId?.let {
+            viewModel.loadNotesByUserId(it)
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

@@ -40,6 +40,8 @@ import com.example.glucoapp.data.db.models.InsulinType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.DropdownMenuItem
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddNoteScreen(
@@ -61,6 +63,7 @@ fun AddNoteScreen(
     val insulinTypes by viewModel.insulinTypes.collectAsState()
     val meals by viewModel.meals.collectAsState()
     val activities by viewModel.activities.collectAsState()
+    val userId by viewModel.userId.collectAsState(initial = null)
 
     LaunchedEffect(Unit) {
         if (insulinTypes.isEmpty()) {
@@ -89,20 +92,22 @@ fun AddNoteScreen(
                 },
                 actions = {
                     IconButton(onClick = {
-                        val newNote = Note(
-                            userId = 1, // TODO: Replace with actual user ID
-                            timestamp = System.currentTimeMillis(),
-                            glucoseLevel = glucoseLevel.toIntOrNull(),
-                            insulinTypeId = selectedInsulinType?.typeId,
-                            noteText = noteText,
-                            mealId = selectedMeal?.mealId,
-                            InsulinAmount = insulinAmount.toDoubleOrNull(),
-                            WW = WW.toDoubleOrNull(),
-                            WBT = WBT.toDoubleOrNull(),
-                            activityId = selectedActivity?.activityId
-                        )
-                        viewModel.insertNote(newNote)
-                        navController.navigate(Screen.Main.route)
+                        userId?.let {
+                            val newNote = Note(
+                                userId = it,
+                                timestamp = System.currentTimeMillis(),
+                                glucoseLevel = glucoseLevel.toIntOrNull(),
+                                insulinTypeId = selectedInsulinType?.typeId,
+                                noteText = noteText,
+                                mealId = selectedMeal?.mealId,
+                                InsulinAmount = insulinAmount.toDoubleOrNull(),
+                                WW = WW.toDoubleOrNull(),
+                                WBT = WBT.toDoubleOrNull(),
+                                activityId = selectedActivity?.activityId
+                            )
+                            viewModel.insertNote(newNote)
+                            navController.navigate(Screen.Main.route)
+                        }
                     }) {
                         Icon(Icons.Filled.Check, "Save")
                     }
@@ -198,8 +203,10 @@ fun AddNoteScreen(
 
             Button(
                 onClick = {
-                    viewModel.loadMealsByUserId(1) // TODO: Replace with actual user ID
-                    showMealSelectionDialog = true
+                    userId?.let {
+                        viewModel.loadMealsByUserId(it)
+                        showMealSelectionDialog = true
+                    }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {

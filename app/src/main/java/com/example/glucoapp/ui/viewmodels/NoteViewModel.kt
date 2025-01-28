@@ -2,6 +2,7 @@ package com.example.glucoapp.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.glucoapp.data.UserPreferences
 import com.example.glucoapp.data.repository.AppRepository
 import com.example.glucoapp.data.db.models.Note
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +18,10 @@ import com.example.glucoapp.data.db.models.Activity
 import com.example.glucoapp.data.db.models.InsulinType
 
 @HiltViewModel
-class NoteViewModel @Inject constructor(private val repository: AppRepository) : ViewModel() {
+class NoteViewModel @Inject constructor(
+    private val repository: AppRepository,
+    private val userPreferences: UserPreferences
+) : ViewModel() {
 
     private val _notes = MutableStateFlow<List<Note>>(emptyList())
     val notes: StateFlow<List<Note>> = _notes.asStateFlow()
@@ -40,9 +44,21 @@ class NoteViewModel @Inject constructor(private val repository: AppRepository) :
     private val _insulinTypes = MutableStateFlow<List<InsulinType>>(emptyList())
     val insulinTypes: StateFlow<List<InsulinType>> = _insulinTypes.asStateFlow()
 
+    private val _userId = MutableStateFlow<Int?>(null)
+    val userId: StateFlow<Int?> = _userId.asStateFlow()
+
     init {
         loadInsulinTypes()
         loadActivities()
+        loadUserId()
+    }
+
+    private fun loadUserId() {
+        viewModelScope.launch {
+            userPreferences.userId.collect { id ->
+                _userId.value = id
+            }
+        }
     }
 
     fun loadInsulinTypes() {
