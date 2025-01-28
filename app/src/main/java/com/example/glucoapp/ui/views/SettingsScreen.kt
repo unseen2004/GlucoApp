@@ -252,6 +252,7 @@ fun ChangeDoctorPasswordDialog(
 fun AddInsulinDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
     var insulinName by remember { mutableStateOf("") }
     var typeName by remember { mutableStateOf("") }
+    val userId by viewModel.userId.collectAsState(initial = null)
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -264,6 +265,7 @@ fun AddInsulinDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
                     label = { Text("Insulin Name") },
                     modifier = Modifier.fillMaxWidth()
                 )
+                Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = typeName,
                     onValueChange = { typeName = it },
@@ -273,10 +275,14 @@ fun AddInsulinDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
             }
         },
         confirmButton = {
-            Button(onClick = {
-                viewModel.addInsulinType(InsulinType(insulinName = insulinName, typeName = typeName))
-                onDismiss()
-            }) {
+            Button(
+                onClick = {
+                    userId?.let {
+                        viewModel.addInsulinType(InsulinType(insulinName = insulinName, typeName = typeName, userId = it))
+                        onDismiss()
+                    }
+                }
+            ) {
                 Text("Add")
             }
         },
@@ -295,7 +301,7 @@ fun AddIngredientDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
     var carbs by remember { mutableStateOf("") }
     var fat by remember { mutableStateOf("") }
     var kcal by remember { mutableStateOf("") }
-    var mealId by remember { mutableStateOf("") }
+    val userId by viewModel.userId.collectAsState(initial = null)
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -336,7 +342,16 @@ fun AddIngredientDialog(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
         },
         confirmButton = {
             Button(onClick = {
-                viewModel.addIngredient(Ingredient(foodName = ingredientName, protein = protein.toFloat(), carbs = carbs.toFloat(), fat = fat.toFloat(), kcal = kcal.toFloat()))
+                userId?.let {
+                    viewModel.addIngredient(Ingredient(
+                        foodName = ingredientName,
+                        protein = protein.toFloat(),
+                        carbs = carbs.toFloat(),
+                        fat = fat.toFloat(),
+                        kcal = kcal.toFloat(),
+                        userId = it
+                    ))
+                }
                 onDismiss()
             }) {
                 Text("Add")

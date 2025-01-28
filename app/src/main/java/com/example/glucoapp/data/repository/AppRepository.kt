@@ -40,6 +40,7 @@ interface AppRepository {
     suspend fun deleteInsulinType(insulinType: InsulinType)
     fun getAllInsulinTypes(): Flow<List<InsulinType>>
     fun getInsulinTypeById(typeId: Int): Flow<InsulinType?>
+    fun getAllInsulinTypesByUserId(userId: Int): Flow<List<InsulinType>>
 
     // Ingredient operations
     suspend fun insertIngredient(ingredient: Ingredient)
@@ -47,6 +48,7 @@ interface AppRepository {
     suspend fun deleteIngredient(ingredient: Ingredient)
     fun getAllIngredients(): Flow<List<Ingredient>>
     fun getIngredientById(ingredientId: Int): Flow<Ingredient?>
+    fun getAllIngredientsByUserId(userId: Int): Flow<List<Ingredient>>
 
     suspend fun logoutUser()
 

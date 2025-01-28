@@ -2,6 +2,7 @@ package com.example.glucoapp.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.glucoapp.data.UserPreferences
 import com.example.glucoapp.data.repository.AppRepository
 import com.example.glucoapp.data.db.models.User
 import com.example.glucoapp.data.db.models.Ingredient
@@ -24,7 +25,10 @@ sealed class SettingsUiState {
 }
 
 @HiltViewModel
-class SettingsViewModel @Inject constructor(private val repository: AppRepository) : ViewModel() {
+class SettingsViewModel @Inject constructor(
+    private val repository: AppRepository,
+    private val userPreferences: UserPreferences
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow<SettingsUiState>(SettingsUiState.Loading)
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
@@ -38,20 +42,34 @@ class SettingsViewModel @Inject constructor(private val repository: AppRepositor
     private val _activities = MutableStateFlow<List<Activity>>(emptyList())
     val activities: StateFlow<List<Activity>> = _activities.asStateFlow()
 
+    private val _userId = MutableStateFlow<Int?>(null)
+    val userId: StateFlow<Int?> = _userId.asStateFlow()
+
     init {
+        loadUserId()
         loadInsulinTypes()
         loadIngredients()
         loadActivities()
     }
 
-    fun loadCurrentUser() {
+    private fun loadUserId() {
+        viewModelScope.launch {
+            userPreferences.userId.collect { id ->
+                _userId.value = id
+                id?.let {
+                    loadCurrentUser(it)
+                }
+            }
+        }
+    }
+
+    private fun loadCurrentUser(userId: Int) {
         viewModelScope.launch {
             try {
-                val currentUserId = 1 // TODO: Replace with actual logic to get the current user ID
-                repository.getUserById(currentUserId).collect { user ->
-                    if (user != null) {
-                        _uiState.value = SettingsUiState.Success(user)
-                    } else {
+                repository.getUserById(userId).collect { user ->
+                    user?.let {
+                        _uiState.value = SettingsUiState.Success(it)
+                    } ?: run {
                         _uiState.value = SettingsUiState.Error("User not found")
                     }
                 }
@@ -70,26 +88,28 @@ class SettingsViewModel @Inject constructor(private val repository: AppRepositor
 
     fun changePassword(newPassword: String) {
         viewModelScope.launch {
-            val currentUserId = 1 // TODO: Replace with actual logic to get the current user ID
-            val user = repository.getUserById(currentUserId).firstOrNull()
-            user?.let {
-                val hashedPassword = hashPassword(newPassword)
-                val updatedUser = it.copy(passwordHash = hashedPassword)
-                repository.updateUser(updatedUser)
-                _uiState.value = SettingsUiState.Success(updatedUser)
+            _userId.value?.let { userId ->
+                val user = repository.getUserById(userId).firstOrNull()
+                user?.let {
+                    val hashedPassword = hashPassword(newPassword)
+                    val updatedUser = it.copy(passwordHash = hashedPassword)
+                    repository.updateUser(updatedUser)
+                    _uiState.value = SettingsUiState.Success(updatedUser)
+                }
             }
         }
     }
 
     fun changeDoctorPassword(newPassword: String) {
         viewModelScope.launch {
-            val currentUserId = 1 // TODO: Replace with actual logic to get the current user ID
-            val user = repository.getUserById(currentUserId).firstOrNull()
-            user?.let {
-                val hashedPassword = hashPassword(newPassword)
-                val updatedUser = it.copy(doctorPasswordHash = hashedPassword)
-                repository.updateUser(updatedUser)
-                _uiState.value = SettingsUiState.Success(updatedUser)
+            _userId.value?.let { userId ->
+                val user = repository.getUserById(userId).firstOrNull()
+                user?.let {
+                    val hashedPassword = hashPassword(newPassword)
+                    val updatedUser = it.copy(doctorPasswordHash = hashedPassword)
+                    repository.updateUser(updatedUser)
+                    _uiState.value = SettingsUiState.Success(updatedUser)
+                }
             }
         }
     }
@@ -142,26 +162,32 @@ class SettingsViewModel @Inject constructor(private val repository: AppRepositor
         }
     }
 
-    private fun loadInsulinTypes() {
+    private fun loadIngredients() {
         viewModelScope.launch {
-            repository.getAllInsulinTypes().collect { insulinTypes ->
-                _insulinTypes.value = insulinTypes
+            _userId.value?.let { userId ->
+                repository.getAllIngredientsByUserId(userId).collect { ingredients ->
+                    _ingredients.value = ingredients
+                }
             }
         }
     }
 
-    private fun loadIngredients() {
+    private fun loadInsulinTypes() {
         viewModelScope.launch {
-            repository.getAllIngredients().collect { ingredients ->
-                _ingredients.value = ingredients
+            _userId.value?.let { userId ->
+                repository.getAllInsulinTypesByUserId(userId).collect { insulinTypes ->
+                    _insulinTypes.value = insulinTypes
+                }
             }
         }
     }
 
     private fun loadActivities() {
         viewModelScope.launch {
-            repository.getActivitiesByUserId(1).collect { activities ->
-                _activities.value = activities
+            _userId.value?.let { userId ->
+                repository.getActivitiesByUserId(userId).collect { activities ->
+                    _activities.value = activities
+                }
             }
         }
     }

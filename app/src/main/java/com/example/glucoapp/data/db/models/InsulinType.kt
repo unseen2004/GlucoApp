@@ -8,5 +8,7 @@ import androidx.room.PrimaryKey
 data class InsulinType(
     @PrimaryKey(autoGenerate = true) val typeId: Int = 0,
     @ColumnInfo(name = "typeName") val typeName: String,
-    @ColumnInfo(name = "insulinName") val insulinName: String
+    @ColumnInfo(name = "insulinName") val insulinName: String,
+    @ColumnInfo(name = "userId") val userId: Int // Add this field
+
 )

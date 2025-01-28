@@ -12,4 +12,6 @@ data class Ingredient(
     @ColumnInfo(name = "carbs") val carbs: Float,
     @ColumnInfo(name = "fat") val fat: Float,
     @ColumnInfo(name = "kcal") val kcal: Float,
-)
+    @ColumnInfo(name = "userId") val userId: Int // Add this field
+
+    )

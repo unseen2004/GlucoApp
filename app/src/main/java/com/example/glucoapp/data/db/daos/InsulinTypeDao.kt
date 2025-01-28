@@ -27,7 +27,8 @@ interface InsulinTypeDao {
 
     @Query("SELECT * FROM InsulinTypes WHERE typeId = :typeId")
     fun getInsulinTypeById(typeId: Int): Flow<InsulinType>
-
+    @Query("SELECT * FROM InsulinTypes WHERE userId = :userId")
+    fun getAllInsulinTypesByUserId(userId: Int): Flow<List<InsulinType>>
     @Transaction
     suspend fun insertAndUpdateInsulinType(insulinType: InsulinType) {
         insert(insulinType)

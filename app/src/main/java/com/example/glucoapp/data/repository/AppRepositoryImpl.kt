@@ -1,7 +1,9 @@
 package com.example.glucoapp.data.repository
+import com.example.glucoapp.data.UserPreferences
 import com.example.glucoapp.data.db.daos.*
 import com.example.glucoapp.data.db.models.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 
 class AppRepositoryImpl @Inject constructor(
@@ -11,7 +13,9 @@ class AppRepositoryImpl @Inject constructor(
     private val activityDao: ActivityDao,
     private val insulinTypeDao: InsulinTypeDao,
     private val ingredientDao: IngredientDao,
-    private val mealWithIngredientDao: MealWithIngredientDao // Added this line
+    private val mealWithIngredientDao: MealWithIngredientDao, // Added this line
+    private val userPreferences: UserPreferences // Inject UserPreferences
+
 ) : AppRepository {
 
     // User operations
@@ -63,18 +67,38 @@ class AppRepositoryImpl @Inject constructor(
     override fun getAllInsulinTypes(): Flow<List<InsulinType>> = insulinTypeDao.getAllInsulinTypes()
     override fun getInsulinTypeById(typeId: Int): Flow<InsulinType?> = insulinTypeDao.getInsulinTypeById(typeId)
 
-    // Ingredient operations
-    override suspend fun insertIngredient(ingredient: Ingredient) = ingredientDao.insert(ingredient)
-    override suspend fun updateIngredient(ingredient: Ingredient) = ingredientDao.update(ingredient)
-    override suspend fun deleteIngredient(ingredient: Ingredient) = ingredientDao.delete(ingredient)
-    override fun getAllIngredients(): Flow<List<Ingredient>> = ingredientDao.getAllIngredients()
-    override fun getIngredientById(ingredientId: Int): Flow<Ingredient?> = ingredientDao.getIngredientById(ingredientId)
-    private fun getCurrentUserId(): Int {
-        // Replace with actual logic to get the current user ID
-        return 1 // Example user ID
+    override suspend fun insertIngredient(ingredient: Ingredient) {
+        ingredientDao.insert(ingredient)
+    }
+
+    override suspend fun updateIngredient(ingredient: Ingredient) {
+        ingredientDao.update(ingredient)
+    }
+
+    override suspend fun deleteIngredient(ingredient: Ingredient) {
+        ingredientDao.delete(ingredient)
+    }
+
+    override fun getAllIngredients(): Flow<List<Ingredient>> {
+        return ingredientDao.getAllIngredients()
+    }
+
+    override fun getIngredientById(ingredientId: Int): Flow<Ingredient?> {
+        return ingredientDao.getIngredientById(ingredientId)
+    }
+
+
+    private suspend fun getCurrentUserId(): Int {
+        return userPreferences.userId.firstOrNull() ?: throw IllegalStateException("User not logged in")
+    }
+override fun getAllIngredientsByUserId(userId: Int): Flow<List<Ingredient>> {
+    return ingredientDao.getAllIngredientsByUserId(userId)
+}
+
+    override fun getAllInsulinTypesByUserId(userId: Int): Flow<List<InsulinType>> {
+        return insulinTypeDao.getAllInsulinTypesByUserId(userId)
     }
     override suspend fun logoutUser() {
-        // Assuming you have a way to get the current user ID
         val currentUserId = getCurrentUserId()
         userDao.clearCurrentUser(currentUserId)
     }

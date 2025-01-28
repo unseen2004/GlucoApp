@@ -1,4 +1,5 @@
 package com.example.glucoapp.di
+
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -71,7 +72,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMealWithIngredientDao(db: AppDatabase): MealWithIngredientDao = db.mealWithIngredientDao() // Added this line
+    fun provideMealWithIngredientDao(db: AppDatabase): MealWithIngredientDao = db.mealWithIngredientDao()
 
     @Provides
     @Singleton
@@ -82,7 +83,8 @@ object AppModule {
         activityDao: ActivityDao,
         insulinTypeDao: InsulinTypeDao,
         ingredientDao: IngredientDao,
-        mealWithIngredientDao: MealWithIngredientDao // Added this line
+        mealWithIngredientDao: MealWithIngredientDao,
+        userPreferences: UserPreferences
     ): AppRepository {
         return AppRepositoryImpl(
             userDao,
@@ -91,7 +93,8 @@ object AppModule {
             activityDao,
             insulinTypeDao,
             ingredientDao,
-            mealWithIngredientDao // Added this line
+            mealWithIngredientDao,
+            userPreferences
         )
     }
 
@@ -101,7 +104,6 @@ object AppModule {
         return UserPreferences(context)
     }
 }
-
 
 sealed class Screen(val route: String) {
     object Login : Screen("login")
